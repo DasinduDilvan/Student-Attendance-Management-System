@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Attendance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* Left Panel - Tree View */
+        .left-panel {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .panel-title i {
+            font-size: 1.3rem;
+        }
+
+        .tree-container {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .tree {
+            list-style: none;
+        }
+
+        .tree-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background-color: #f1f6ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .tree-header:hover {
+            background-color: #e8efff;
+        }
+
+        .tree-header.active {
+            background-color: #e0ebff;
+        }
+
+        .tree-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tree-toggle {
+            transition: var(--transition);
+        }
+
+        .tree-toggle.rotated {
+            transform: rotate(90deg);
+        }
+
+        .tree-children {
+            list-style: none;
+            padding-left: 2rem;
+            margin-top: 0.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .tree-children.show {
+            max-height: 1000px;
+        }
+
+        .child-item {
+            padding: 0.6rem 1rem;
+            background-color: #f9fafc;
+            margin-bottom: 0.4rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .child-item:hover {
+            background-color: #f1f5fd;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .item-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .item-actions button:hover {
+            color: var(--primary-color);
+        }
+
+        /* Right Panel - Form */
+        .right-panel {
+            flex: 2;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        .form-title i {
+            font-size: 1.5rem;
+        }
+
+        .form-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .form-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #888;
+            transition: var(--transition);
+        }
+
+        .step.active .step-circle {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        .form-content {
+            margin-bottom: 2rem;
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: #f1f3f9;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e4e7f1;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            display: none;
+        }
+
+        .success-message i {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message h3 {
+            color: var(--success-color);
+            margin-bottom: 0.8rem;
+        }
+
+        /* Course Management Styles */
+        .course-list {
+            background-color: #f9fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .course-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background-color: white;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .course-info h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .course-info p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .course-code {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .form-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .form-steps::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .course-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-university"></i>
+            <h1>University Attendance Management</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="#"><i class="fas fa-users"></i> Students</a>
+            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        
+        <div class="user-profile">
+            <img src="https://ui-avatars.com/api/?name=Admin+User&background=4361ee&color=fff&size=128" alt="Admin">
+            <div>
+                <h4>Admin User</h4>
+                <p style="font-size: 0.8rem; color: #666;">Administrator</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Panel - Tree View -->
+        <div class="left-panel">
+            <div class="panel-title">
+                <i class="fas fa-sitemap"></i>
+                <h2>Course Categories & Structure</h2>
+            </div>
+            
+            <div class="tree-container">
+                <ul class="tree" id="universityTree">
+                    <!-- Tree structure will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Panel - Form -->
+        <div class="right-panel">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i>
+                <h2>Add New Structure</h2>
+            </div>
+            
+            <!-- Form Steps Indicator -->
+            <div class="form-steps">
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Department</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Add Courses</div>
+                </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="form-content">
+                <!-- Step 1: Department -->
+                <div class="form-step active" id="formStep1">
+                    <div class="form-group">
+                        <label for="deptName"><i class="fas fa-building"></i> Department/Category Name</label>
+                        <input type="text" id="deptName" placeholder="e.g., Engineering Technology">
+                    </div>
+                    <div class="form-group">
+                        <label for="deptCode"><i class="fas fa-code"></i> Department Code</label>
+                        <input type="text" id="deptCode" placeholder="e.g., ET">
+                    </div>
+                    <div class="form-group">
+                        <label for="deptDescription"><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="deptDescription" rows="3" placeholder="Brief description of the department..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <p><i class="fas fa-info-circle" style="color: var(--primary-color);"></i> <strong>Note:</strong> When you add a department, 4 Levels (Level 1-4) and 2 Semesters per Level (Semester I and Semester II) will be automatically created.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Add Courses -->
+                <div class="form-step" id="formStep2">
+                    <div class="form-group">
+                        <label for="selectLevel"><i class="fas fa-layer-group"></i> Select Level</label>
+                        <select id="selectLevel">
+                            <option value="">Select a Level</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="selectSemester"><i class="fas fa-calendar-alt"></i> Select Semester</label>
+                        <select id="selectSemester">
+                            <option value="">Select a Semester</option>
+                            <option value="I">Semester I</option>
+                            <option value="II">Semester II</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseCode"><i class="fas fa-hashtag"></i> Course Code</label>
+                        <input type="text" id="courseCode" placeholder="e.g., CS101">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseName"><i class="fas fa-book"></i> Course Name</label>
+                        <input type="text" id="courseName" placeholder="e.g., Introduction to Programming">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseCredits"><i class="fas fa-star"></i> Credit Hours</label>
+                        <input type="number" id="courseCredits" placeholder="e.g., 3" min="1" max="6">
+                    </div>
+                    
+                    <div class="course-list" id="courseList">
+                        <h4 style="margin-bottom: 1rem;">Courses in this Semester:</h4>
+                        <div id="coursesContainer">
+                            <!-- Courses will be dynamically added here -->
+                            <div class="empty-state" id="emptyCourses">
+                                <i class="fas fa-book-open"></i>
+                                <p>No courses added yet. Add your first course above.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Structure Added Successfully!</h3>
+                    <p>The new department with all levels and semesters has been created successfully.</p>
+                    <button class="btn btn-primary" id="addAnotherBtn" style="margin-top: 1.5rem;">
+                        <i class="fas fa-plus"></i> Add Another Department
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions" id="formActions">
+                <button class="btn btn-secondary" id="prevBtn" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>University Attendance Management System &copy; 2023 | Developed for Academic Use</p>
+    </div>
+
+    <script>
+        // Sample data for the tree structure matching your image
+        const universityData = [
+            {
+                id: 1,
+                name: "Engineering Technology",
+                code: "ET",
+                description: "Courses related to engineering and technology",
+                levels: [
+                    {
+                        id: 101,
+                        name: "Level 1",
+                        semesters: [
+                            { 
+                                id: 1001, 
+                                name: "Semester I6",
+                                courses: [
+                                    { code: "ET101", name: "Engineering Mathematics I", credits: 3 },
+                                    { code: "ET102", name: "Engineering Physics", credits: 3 }
+                                ]
+                            },
+                            { 
+                                id: 1002, 
+                                name: "Semester I7",
+                                courses: [
+                                    { code: "ET103", name: "Engineering Drawing", credits: 2 },
+                                    { code: "ET104", name: "Basic Electrical Engineering", credits: 3 }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 102,
+                        name: "Level 2",
+                        semesters: [
+                            { 
+                                id: 1003, 
+                                name: "Semester I9",
+                                courses: [
+                                    { code: "ET201", name: "Engineering Mechanics", credits: 3 },
+                                    { code: "ET202", name: "Thermodynamics", credits: 3 }
+                                ]
+                            },
+                            { 
+                                id: 1004, 
+                                name: "Semester II (1)",
+                                courses: [
+                                    { code: "ET203", name: "Fluid Mechanics", credits: 3 }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 103,
+                        name: "Level 3",
+                        semesters: [
+                            { 
+                                id: 1005, 
+                                name: "SemesterI7",
+                                courses: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 104,
+                        name: "Level 4",
+                        semesters: [
+                            { 
+                                id: 1006, 
+                                name: "Semester II6",
+                                courses: []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Information and Communication Technology",
+                code: "ICT",
+                description: "Courses related to IT and communication technologies",
+                levels: [
+                    {
+                        id: 201,
+                        name: "Level 1",
+                        semesters: [
+                            { id: 2001, name: "Semester I", courses: [] },
+                            { id: 2002, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 202,
+                        name: "Level 2",
+                        semesters: [
+                            { id: 2003, name: "Semester I", courses: [] },
+                            { id: 2004, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 203,
+                        name: "Level 3",
+                        semesters: [
+                            { id: 2005, name: "Semester I", courses: [] },
+                            { id: 2006, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 204,
+                        name: "Level 4",
+                        semesters: [
+                            { id: 2007, name: "Semester I", courses: [] },
+                            { id: 2008, name: "Semester II", courses: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "Biosystems Technology",
+                code: "BST",
+                description: "Courses related to biological systems and technology",
+                levels: [
+                    {
+                        id: 301,
+                        name: "Level 1",
+                        semesters: [
+                            { id: 3001, name: "Semester I", courses: [] },
+                            { id: 3002, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 302,
+                        name: "Level 2",
+                        semesters: [
+                            { id: 3003, name: "Semester I", courses: [] },
+                            { id: 3004, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 303,
+                        name: "Level 3",
+                        semesters: [
+                            { id: 3005, name: "Semester I", courses: [] },
+                            { id: 3006, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 304,
+                        name: "Level 4",
+                        semesters: [
+                            { id: 3007, name: "Semester I", courses: [] },
+                            { id: 3008, name: "Semester II", courses: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                name: "Multidisciplinary Studies",
+                code: "MDS",
+                description: "Interdisciplinary courses combining multiple fields",
+                levels: [
+                    {
+                        id: 401,
+                        name: "Level 1",
+                        semesters: [
+                            { id: 4001, name: "Semester I", courses: [] },
+                            { id: 4002, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 402,
+                        name: "Level 2",
+                        semesters: [
+                            { id: 4003, name: "Semester I", courses: [] },
+                            { id: 4004, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 403,
+                        name: "Level 3",
+                        semesters: [
+                            { id: 4005, name: "Semester I", courses: [] },
+                            { id: 4006, name: "Semester II", courses: [] }
+                        ]
+                    },
+                    {
+                        id: 404,
+                        name: "Level 4",
+                        semesters: [
+                            { id: 4007, name: "Semester I", courses: [] },
+                            { id: 4008, name: "Semester II", courses: [] }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const universityTree = document.getElementById('universityTree');
+        const formSteps = document.querySelectorAll('.form-step');
+        const stepIndicators = document.querySelectorAll('.step');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const successMessage = document.getElementById('successMessage');
+        const formActions = document.getElementById('formActions');
+        const addAnotherBtn = document.getElementById('addAnotherBtn');
+        const selectLevel = document.getElementById('selectLevel');
+        const selectSemester = document.getElementById('selectSemester');
+        const courseCode = document.getElementById('courseCode');
+        const courseName = document.getElementById('courseName');
+        const courseCredits = document.getElementById('courseCredits');
+        const coursesContainer = document.getElementById('coursesContainer');
+        const emptyCourses = document.getElementById('emptyCourses');
+        const deptName = document.getElementById('deptName');
+        const deptCode = document.getElementById('deptCode');
+        const deptDescription = document.getElementById('deptDescription');
+
+        let currentStep = 1;
+        let selectedDeptId = null;
+        let selectedLevel = null;
+        let selectedSemester = null;
+
+        // Initialize the tree view
+        function renderTree() {
+            universityTree.innerHTML = '';
+            
+            universityData.forEach(department => {
+                const deptItem = document.createElement('li');
+                deptItem.className = 'tree-item';
+                deptItem.innerHTML = `
+                    <div class="tree-header" data-id="${department.id}">
+                        <div class="tree-title">
+                            <i class="fas fa-building"></i>
+                            <span>${department.name} (${department.code})</span>
+                        </div>
+                        <div class="tree-toggle">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <ul class="tree-children" id="dept-${department.id}">
+                        ${department.levels.map(level => `
+                            <li class="tree-item">
+                                <div class="tree-header" data-id="${level.id}">
+                                    <div class="tree-title">
+                                        <i class="fas fa-layer-group"></i>
+                                        <span>${level.name}</span>
+                                    </div>
+                                    <div class="tree-toggle">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <ul class="tree-children" id="level-${level.id}">
+                                    ${level.semesters.map(semester => `
+                                        <li class="tree-item">
+                                            <div class="tree-header" data-id="${semester.id}">
+                                                <div class="tree-title">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    <span>${semester.name}</span>
+                                                    <span class="course-count" style="font-size: 0.8rem; color: #666; margin-left: auto; margin-right: 1rem;">
+                                                        ${semester.courses.length} courses
+                                                    </span>
+                                                </div>
+                                                <div class="tree-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                            <ul class="tree-children" id="semester-${semester.id}">
+                                                ${semester.courses.length > 0 ? 
+                                                    semester.courses.map(course => `
+                                                        <li class="child-item">
+                                                            <div class="tree-title">
+                                                                <i class="fas fa-book"></i>
+                                                                <div>
+                                                                    <h4 style="margin: 0;">${course.name}</h4>
+                                                                    <p style="margin: 0; font-size: 0.85rem;">
+                                                                        <span class="course-code">${course.code}</span> | ${course.credits} Credit Hours
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item-actions">
+                                                                <button title="Edit Course"><i class="fas fa-edit"></i></button>
+                                                                <button title="Delete Course"><i class="fas fa-trash"></i></button>
+                                                            </div>
+                                                        </li>
+                                                    `).join('') 
+                                                    : 
+                                                    `<li class="empty-state" style="padding: 1rem; text-align: center; color: #888;">
+                                                        <i class="fas fa-book-open"></i>
+                                                        <p>No courses added yet</p>
+                                                    </li>`
+                                                }
+                                            </ul>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                universityTree.appendChild(deptItem);
+            });
+            
+            // Add event listeners for tree toggle
+            document.querySelectorAll('.tree-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const toggleIcon = this.querySelector('.tree-toggle i');
+                    const children = this.parentElement.querySelector('.tree-children');
+                    
+                    if (children) {
+                        children.classList.toggle('show');
+                        toggleIcon.classList.toggle('rotated');
+                        this.classList.toggle('active');
+                    }
+                });
+            });
+
+            // Add event listeners for selecting department from tree
+            document.querySelectorAll('.tree-header[data-id]').forEach(header => {
+                header.addEventListener('click', function(e) {
+                    const id = this.getAttribute('data-id');
+                    // Check if this is a department header (IDs 1-100)
+                    if (id < 100) {
+                        const dept = universityData.find(d => d.id == id);
+                        if (dept) {
+                            selectedDeptId = dept.id;
+                            // If we're on step 2, update the courses list for this department
+                            if (currentStep === 2) {
+                                updateLevelAndSemesterOptions(dept);
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Form step navigation
+        function updateFormSteps() {
+            // Hide all form steps
+            formSteps.forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show current form step
+            document.getElementById(`formStep${currentStep}`).classList.add('active');
+            
+            // Update step indicators
+            stepIndicators.forEach((step, index) => {
+                if (index + 1 < currentStep) {
+                    step.classList.remove('active');
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.remove('completed');
+                }
+            });
+            
+            // Update buttons
+            prevBtn.disabled = currentStep === 1;
+            
+            if (currentStep === 2) {
+                nextBtn.innerHTML = 'Add Course <i class="fas fa-plus"></i>';
+                nextBtn.classList.remove('btn-primary');
+                nextBtn.classList.add('btn-success');
+                
+                // Update level and semester options based on selected department
+                if (selectedDeptId) {
+                    const dept = universityData.find(d => d.id == selectedDeptId);
+                    if (dept) {
+                        updateLevelAndSemesterOptions(dept);
+                    }
+                }
+            } else {
+                nextBtn.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+                nextBtn.classList.remove('btn-success');
+                nextBtn.classList.add('btn-primary');
+            }
+        }
+
+        // Update level and semester dropdowns based on selected department
+        function updateLevelAndSemesterOptions(department) {
+            // Clear existing options except the first one
+            while (selectLevel.options.length > 1) {
+                selectLevel.remove(1);
+            }
+            
+            while (selectSemester.options.length > 1) {
+                selectSemester.remove(1);
+            }
+            
+            // Add level options
+            department.levels.forEach(level => {
+                const option = document.createElement('option');
+                option.value = level.id;
+                option.textContent = level.name;
+                selectLevel.appendChild(option);
+            });
+            
+            // Add semester options (same for all levels)
+            const semesters = ['Semester I', 'Semester II'];
+            semesters.forEach(semester => {
+                const option = document.createElement('option');
+                option.value = semester;
+                option.textContent = semester;
+                selectSemester.appendChild(option);
+            });
+            
+            // Reset selections
+            selectLevel.value = '';
+            selectSemester.value = '';
+            selectedLevel = null;
+            selectedSemester = null;
+            
+            // Clear course list
+            updateCourseList();
+        }
+
+        // Update course list display
+        function updateCourseList() {
+            if (!selectedDeptId || !selectedLevel || !selectedSemester) {
+                emptyCourses.style.display = 'block';
+                coursesContainer.innerHTML = '';
+                coursesContainer.appendChild(emptyCourses);
+                return;
+            }
+            
+            const dept = universityData.find(d => d.id == selectedDeptId);
+            if (!dept) return;
+            
+            const level = dept.levels.find(l => l.id == selectedLevel);
+            if (!level) return;
+            
+            const semester = level.semesters.find(s => s.name.includes(selectedSemester));
+            if (!semester) return;
+            
+            // Hide empty state
+            emptyCourses.style.display = 'none';
+            
+            // Clear and rebuild course list
+            coursesContainer.innerHTML = '';
+            
+            if (semester.courses.length === 0) {
+                coursesContainer.appendChild(emptyCourses);
+                emptyCourses.style.display = 'block';
+            } else {
+                semester.courses.forEach(course => {
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'course-item';
+                    courseItem.innerHTML = `
+                        <div class="course-info">
+                            <h4>${course.name}</h4>
+                            <p><span class="course-code">${course.code}</span> | ${course.credits} Credit Hours</p>
+                        </div>
+                        <div class="item-actions">
+                            <button title="Edit Course"><i class="fas fa-edit"></i></button>
+                            <button title="Delete Course"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    coursesContainer.appendChild(courseItem);
+                });
+            }
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateFormSteps();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep === 1) {
+                // Validate department form
+                if (!deptName.value.trim() || !deptCode.value.trim()) {
+                    alert('Please fill in all required fields for the department.');
+                    return;
+                }
+                
+                // Create new department with 4 levels and 2 semesters each
+                const newDept = {
+                    id: universityData.length + 1,
+                    name: deptName.value,
+                    code: deptCode.value,
+                    description: deptDescription.value,
+                    levels: []
+                };
+                
+                // Create 4 levels
+                for (let i = 1; i <= 4; i++) {
+                    const level = {
+                        id: newDept.id * 100 + i,
+                        name: `Level ${i}`,
+                        semesters: []
+                    };
+                    
+                    // Create 2 semesters for each level
+                    for (let j = 1; j <= 2; j++) {
+                        const semester = {
+                            id: level.id * 10 + j,
+                            name: `Semester ${j === 1 ? 'I' : 'II'}`,
+                            courses: []
+                        };
+                        level.semesters.push(semester);
+                    }
+                    
+                    newDept.levels.push(level);
+                }
+                
+                // Add to data and update UI
+                universityData.push(newDept);
+                selectedDeptId = newDept.id;
+                currentStep++;
+                updateFormSteps();
+                
+            } else if (currentStep === 2) {
+                // Add a new course
+                if (!selectLevel.value || !selectSemester.value || !courseCode.value.trim() || !courseName.value.trim() || !courseCredits.value) {
+                    alert('Please fill in all course details.');
+                    return;
+                }
+                
+                const dept = universityData.find(d => d.id == selectedDeptId);
+                if (!dept) return;
+                
+                const level = dept.levels.find(l => l.id == parseInt(selectLevel.value));
+                if (!level) return;
+                
+                // Find the semester (could be "Semester I" or "Semester II")
+                const semester = level.semesters.find(s => s.name.includes(selectSemester.value));
+                if (!semester) return;
+                
+                // Create new course
+                const newCourse = {
+                    code: courseCode.value,
+                    name: courseName.value,
+                    credits: parseInt(courseCredits.value)
+                };
+                
+                // Add course to semester
+                semester.courses.push(newCourse);
+                
+                // Update UI
+                updateCourseList();
+                renderTree();
+                
+                // Clear form fields
+                courseCode.value = '';
+                courseName.value = '';
+                courseCredits.value = '';
+            }
+        });
+
+        selectLevel.addEventListener('change', function() {
+            selectedLevel = this.value ? parseInt(this.value) : null;
+            updateCourseList();
+        });
+
+        selectSemester.addEventListener('change', function() {
+            selectedSemester = this.value;
+            updateCourseList();
+        });
+
+        addAnotherBtn.addEventListener('click', () => {
+            // Reset form
+            deptName.value = '';
+            deptCode.value = '';
+            deptDescription.value = '';
+            selectLevel.value = '';
+            selectSemester.value = '';
+            courseCode.value = '';
+            courseName.value = '';
+            courseCredits.value = '';
+            
+            // Reset to step 1
+            currentStep = 1;
+            selectedDeptId = null;
+            selectedLevel = null;
+            selectedSemester = null;
+            updateFormSteps();
+            
+            // Hide success message
+            successMessage.style.display = 'none';
+            formActions.style.display = 'flex';
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTree();
+            updateFormSteps();
+            
+            // Set first department as selected by default
+            if (universityData.length > 0) {
+                selectedDeptId = universityData[0].id;
+                if (currentStep === 2) {
+                    updateLevelAndSemesterOptions(universityData[0]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

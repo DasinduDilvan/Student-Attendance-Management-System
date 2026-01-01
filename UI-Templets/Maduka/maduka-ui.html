@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecturer Panel - Attendance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-content p {
+            color: #666;
+        }
+
+        .date-time {
+            text-align: right;
+        }
+
+        .date-time .date {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .date-time .time {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Lectures Section */
+        .lectures-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+        }
+
+        .lectures-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .lecture-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .lecture-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .lecture-card.active {
+            border-left-color: var(--success-color);
+            background-color: #f8fff8;
+        }
+
+        .lecture-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .lecture-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .lecture-code {
+            background-color: #f1f6ff;
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .lecture-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .lecture-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #666;
+        }
+
+        .lecture-detail i {
+            width: 20px;
+            color: var(--primary-color);
+        }
+
+        .lecture-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-upcoming {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        .status-ongoing {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .status-completed {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .student-count {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Attendance Panel */
+        .attendance-panel {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .attendance-panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .panel-title h2 {
+            color: var(--primary-color);
+        }
+
+        .selected-course {
+            background-color: #f1f6ff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .attendance-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Attendance Container */
+        .attendance-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: 500px;
+        }
+
+        .attendance-column {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .column-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .student-count-badge {
+            background-color: #f1f6ff;
+            color: var(--primary-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .student-list {
+            flex: 1;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-height: 500px;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .student-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f1f6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .student-details h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .student-details p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn-secondary {
+            background-color: #f1f3f9;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e4e7f1;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--dark-color);
+        }
+
+        .btn-outline:hover {
+            background-color: #f9f9f9;
+        }
+
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .select-all input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .attendance-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .lectures-container {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .attendance-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .welcome-card {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .date-time {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .lectures-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .attendance-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h1>Lecturer Panel</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Schedule</a>
+            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        
+        <div class="user-profile">
+            <img src="https://ui-avatars.com/api/?name=Dr+John+Doe&background=4361ee&color=fff&size=128" alt="Lecturer">
+            <div>
+                <h4>Dr. John Doe</h4>
+                <p style="font-size: 0.8rem; color: #666;">Senior Lecturer</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="welcome-content">
+                <h2>Welcome back, Dr. John Doe</h2>
+                <p>Here are your scheduled lectures for today</p>
+            </div>
+            <div class="date-time">
+                <div class="date" id="currentDate">Monday, September 25, 2023</div>
+                <div class="time" id="currentTime">09:45 AM</div>
+            </div>
+        </div>
+
+        <!-- Today's Lectures Section -->
+        <div class="lectures-section">
+            <div class="section-title">
+                <i class="fas fa-calendar-day"></i>
+                <h2>Today's Lectures</h2>
+            </div>
+            
+            <div class="lectures-container" id="lecturesContainer">
+                <!-- Lectures will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Attendance Panel -->
+        <div class="attendance-panel" id="attendancePanel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h2>Mark Attendance</h2>
+                    <div class="selected-course" id="selectedCourse">CS101 - Introduction to Programming</div>
+                </div>
+                
+                <div class="attendance-actions">
+                    <button class="btn btn-secondary" id="closePanelBtn">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button class="btn btn-success" id="markAllPresentBtn">
+                        <i class="fas fa-check-double"></i> Mark All Present
+                    </button>
+                    <button class="btn btn-primary" id="saveAttendanceBtn">
+                        <i class="fas fa-save"></i> Save Attendance
+                    </button>
+                </div>
+            </div>
+            
+            <div class="attendance-container">
+                <!-- Left Column - Absent Students -->
+                <div class="attendance-column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <i class="fas fa-user-clock"></i>
+                            <h3>Absent Students</h3>
+                        </div>
+                        <div class="student-count-badge" id="absentCount">25</div>
+                    </div>
+                    
+                    <div class="select-all">
+                        <input type="checkbox" id="selectAllAbsent">
+                        <label for="selectAllAbsent">Select All Absent Students</label>
+                    </div>
+                    
+                    <div class="student-list" id="absentStudentsList">
+                        <!-- Absent students will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Right Column - Present Students -->
+                <div class="attendance-column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <i class="fas fa-user-check"></i>
+                            <h3>Present Students</h3>
+                        </div>
+                        <div class="student-count-badge" id="presentCount">0</div>
+                    </div>
+                    
+                    <div class="student-list" id="presentStudentsList">
+                        <!-- Present students will be populated by JavaScript -->
+                        <div class="empty-state" id="emptyPresent">
+                            <i class="fas fa-users"></i>
+                            <p>No students marked as present yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>University Attendance Management System &copy; 2023 | Lecturer Panel</p>
+    </div>
+
+    <script>
+        // Sample data for today's lectures
+        const todayLectures = [
+            {
+                id: 1,
+                courseCode: "CS101",
+                courseName: "Introduction to Programming",
+                time: "08:00 AM - 09:30 AM",
+                venue: "Room 301, CS Building",
+                level: "Level 1",
+                semester: "Semester I",
+                totalStudents: 45,
+                status: "completed", // completed, ongoing, upcoming
+                students: []
+            },
+            {
+                id: 2,
+                courseCode: "CS201",
+                courseName: "Data Structures and Algorithms",
+                time: "10:00 AM - 11:30 AM",
+                venue: "Room 305, CS Building",
+                level: "Level 2",
+                semester: "Semester III",
+                totalStudents: 38,
+                status: "ongoing",
+                students: []
+            },
+            {
+                id: 3,
+                courseCode: "CS301",
+                courseName: "Database Management Systems",
+                time: "01:00 PM - 02:30 PM",
+                venue: "Lab 102, CS Building",
+                level: "Level 3",
+                semester: "Semester V",
+                totalStudents: 32,
+                status: "upcoming",
+                students: []
+            },
+            {
+                id: 4,
+                courseCode: "CS401",
+                courseName: "Artificial Intelligence",
+                time: "03:00 PM - 04:30 PM",
+                venue: "Room 401, CS Building",
+                level: "Level 4",
+                semester: "Semester VII",
+                totalStudents: 28,
+                status: "upcoming",
+                students: []
+            }
+        ];
+
+        // Sample student data
+        const studentsData = [
+            { id: 1, regNo: "CS/2021/001", name: "Alice Johnson", avatar: "AJ" },
+            { id: 2, regNo: "CS/2021/002", name: "Bob Williams", avatar: "BW" },
+            { id: 3, regNo: "CS/2021/003", name: "Charlie Brown", avatar: "CB" },
+            { id: 4, regNo: "CS/2021/004", name: "Diana Miller", avatar: "DM" },
+            { id: 5, regNo: "CS/2021/005", name: "Edward Davis", avatar: "ED" },
+            { id: 6, regNo: "CS/2021/006", name: "Fiona Garcia", avatar: "FG" },
+            { id: 7, regNo: "CS/2021/007", name: "George Wilson", avatar: "GW" },
+            { id: 8, regNo: "CS/2021/008", name: "Hannah Taylor", avatar: "HT" },
+            { id: 9, regNo: "CS/2021/009", name: "Ian Martinez", avatar: "IM" },
+            { id: 10, regNo: "CS/2021/010", name: "Julia Anderson", avatar: "JA" },
+            { id: 11, regNo: "CS/2021/011", name: "Kevin Thomas", avatar: "KT" },
+            { id: 12, regNo: "CS/2021/012", name: "Laura Moore", avatar: "LM" },
+            { id: 13, regNo: "CS/2021/013", name: "Michael Jackson", avatar: "MJ" },
+            { id: 14, regNo: "CS/2021/014", name: "Nancy Lee", avatar: "NL" },
+            { id: 15, regNo: "CS/2021/015", name: "Oliver Harris", avatar: "OH" }
+        ];
+
+        // DOM elements
+        const lecturesContainer = document.getElementById('lecturesContainer');
+        const attendancePanel = document.getElementById('attendancePanel');
+        const selectedCourse = document.getElementById('selectedCourse');
+        const closePanelBtn = document.getElementById('closePanelBtn');
+        const markAllPresentBtn = document.getElementById('markAllPresentBtn');
+        const saveAttendanceBtn = document.getElementById('saveAttendanceBtn');
+        const absentStudentsList = document.getElementById('absentStudentsList');
+        const presentStudentsList = document.getElementById('presentStudentsList');
+        const absentCount = document.getElementById('absentCount');
+        const presentCount = document.getElementById('presentCount');
+        const selectAllAbsent = document.getElementById('selectAllAbsent');
+        const emptyPresent = document.getElementById('emptyPresent');
+        const currentDate = document.getElementById('currentDate');
+        const currentTime = document.getElementById('currentTime');
+
+        // State variables
+        let currentLectureId = null;
+        let absentStudents = [];
+        let presentStudents = [];
+
+        // Initialize the page
+        function initPage() {
+            // Set current date and time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Render today's lectures
+            renderLectures();
+            
+            // Initialize event listeners
+            setupEventListeners();
+            
+            // For demo purposes, assign some students to each lecture
+            assignStudentsToLectures();
+        }
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDate.textContent = now.toLocaleDateString('en-US', options);
+            
+            // Format time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            currentTime.textContent = `${hours}:${minutes} ${ampm}`;
+        }
+
+        // Render today's lectures
+        function renderLectures() {
+            lecturesContainer.innerHTML = '';
+            
+            todayLectures.forEach(lecture => {
+                const lectureCard = document.createElement('div');
+                lectureCard.className = `lecture-card ${lecture.id === currentLectureId ? 'active' : ''}`;
+                lectureCard.dataset.id = lecture.id;
+                
+                // Determine status badge text and class
+                let statusText, statusClass;
+                switch(lecture.status) {
+                    case 'completed':
+                        statusText = 'Completed';
+                        statusClass = 'status-completed';
+                        break;
+                    case 'ongoing':
+                        statusText = 'Ongoing';
+                        statusClass = 'status-ongoing';
+                        break;
+                    case 'upcoming':
+                        statusText = 'Upcoming';
+                        statusClass = 'status-upcoming';
+                        break;
+                }
+                
+                lectureCard.innerHTML = `
+                    <div class="lecture-header">
+                        <div class="lecture-title">${lecture.courseName}</div>
+                        <div class="lecture-code">${lecture.courseCode}</div>
+                    </div>
+                    <div class="lecture-details">
+                        <div class="lecture-detail">
+                            <i class="far fa-clock"></i>
+                            <span>${lecture.time}</span>
+                        </div>
+                        <div class="lecture-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${lecture.venue}</span>
+                        </div>
+                        <div class="lecture-detail">
+                            <i class="fas fa-layer-group"></i>
+                            <span>${lecture.level} - ${lecture.semester}</span>
+                        </div>
+                    </div>
+                    <div class="lecture-status">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="student-count">${lecture.totalStudents} students</span>
+                    </div>
+                `;
+                
+                lecturesContainer.appendChild(lectureCard);
+            });
+            
+            // Add click event to lecture cards
+            document.querySelectorAll('.lecture-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const lectureId = parseInt(this.dataset.id);
+                    openAttendancePanel(lectureId);
+                });
+            });
+        }
+
+        // Assign students to lectures for demo purposes
+        function assignStudentsToLectures() {
+            todayLectures.forEach(lecture => {
+                // Assign random students to each lecture (for demo)
+                const shuffled = [...studentsData].sort(() => 0.5 - Math.random());
+                lecture.students = shuffled.slice(0, lecture.totalStudents);
+            });
+        }
+
+        // Open attendance panel for a specific lecture
+        function openAttendancePanel(lectureId) {
+            // Set active lecture
+            currentLectureId = lectureId;
+            
+            // Update lecture cards active state
+            document.querySelectorAll('.lecture-card').forEach(card => {
+                if (parseInt(card.dataset.id) === lectureId) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // Get lecture details
+            const lecture = todayLectures.find(l => l.id === lectureId);
+            if (!lecture) return;
+            
+            // Update selected course display
+            selectedCourse.textContent = `${lecture.courseCode} - ${lecture.courseName}`;
+            
+            // Initialize attendance lists
+            absentStudents = [...lecture.students];
+            presentStudents = [];
+            
+            // Render attendance lists
+            renderAttendanceLists();
+            
+            // Show attendance panel
+            attendancePanel.classList.add('active');
+            
+            // Scroll to attendance panel
+            attendancePanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Render attendance lists
+        function renderAttendanceLists() {
+            // Render absent students
+            absentStudentsList.innerHTML = '';
+            
+            if (absentStudents.length === 0) {
+                absentStudentsList.innerHTML = '<div class="empty-state"><i class="fas fa-user-check"></i><p>All students are present</p></div>';
+            } else {
+                absentStudents.forEach(student => {
+                    const studentItem = document.createElement('div');
+                    studentItem.className = 'student-item';
+                    studentItem.dataset.id = student.id;
+                    
+                    studentItem.innerHTML = `
+                        <div class="student-info">
+                            <div class="student-avatar">${student.avatar}</div>
+                            <div class="student-details">
+                                <h4>${student.name}</h4>
+                                <p>${student.regNo}</p>
+                            </div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-sm btn-success mark-present-btn">
+                                <i class="fas fa-check"></i> Present
+                            </button>
+                        </div>
+                    `;
+                    
+                    absentStudentsList.appendChild(studentItem);
+                });
+            }
+            
+            // Render present students
+            presentStudentsList.innerHTML = '';
+            
+            if (presentStudents.length === 0) {
+                emptyPresent.style.display = 'block';
+                presentStudentsList.appendChild(emptyPresent);
+            } else {
+                emptyPresent.style.display = 'none';
+                presentStudents.forEach(student => {
+                    const studentItem = document.createElement('div');
+                    studentItem.className = 'student-item';
+                    studentItem.dataset.id = student.id;
+                    
+                    studentItem.innerHTML = `
+                        <div class="student-info">
+                            <div class="student-avatar">${student.avatar}</div>
+                            <div class="student-details">
+                                <h4>${student.name}</h4>
+                                <p>${student.regNo}</p>
+                            </div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-sm btn-outline mark-absent-btn">
+                                <i class="fas fa-times"></i> Absent
+                            </button>
+                        </div>
+                    `;
+                    
+                    presentStudentsList.appendChild(studentItem);
+                });
+            }
+            
+            // Update counts
+            absentCount.textContent = absentStudents.length;
+            presentCount.textContent = presentStudents.length;
+            
+            // Add event listeners to buttons
+            addAttendanceButtonListeners();
+        }
+
+        // Add event listeners to attendance buttons
+        function addAttendanceButtonListeners() {
+            // "Present" buttons
+            document.querySelectorAll('.mark-present-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const studentItem = this.closest('.student-item');
+                    const studentId = parseInt(studentItem.dataset.id);
+                    markStudentPresent(studentId);
+                });
+            });
+            
+            // "Absent" buttons
+            document.querySelectorAll('.mark-absent-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const studentItem = this.closest('.student-item');
+                    const studentId = parseInt(studentItem.dataset.id);
+                    markStudentAbsent(studentId);
+                });
+            });
+        }
+
+        // Mark student as present
+        function markStudentPresent(studentId) {
+            // Find student in absent list
+            const studentIndex = absentStudents.findIndex(s => s.id === studentId);
+            if (studentIndex === -1) return;
+            
+            // Remove from absent and add to present
+            const student = absentStudents[studentIndex];
+            absentStudents.splice(studentIndex, 1);
+            presentStudents.push(student);
+            
+            // Re-render lists
+            renderAttendanceLists();
+        }
+
+        // Mark student as absent
+        function markStudentAbsent(studentId) {
+            // Find student in present list
+            const studentIndex = presentStudents.findIndex(s => s.id === studentId);
+            if (studentIndex === -1) return;
+            
+            // Remove from present and add to absent
+            const student = presentStudents[studentIndex];
+            presentStudents.splice(studentIndex, 1);
+            absentStudents.push(student);
+            
+            // Re-render lists
+            renderAttendanceLists();
+        }
+
+        // Mark all students as present
+        function markAllPresent() {
+            // Move all absent students to present
+            presentStudents = [...presentStudents, ...absentStudents];
+            absentStudents = [];
+            
+            // Re-render lists
+            renderAttendanceLists();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Close panel button
+            closePanelBtn.addEventListener('click', function() {
+                attendancePanel.classList.remove('active');
+                currentLectureId = null;
+                
+                // Remove active state from all lecture cards
+                document.querySelectorAll('.lecture-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+            });
+            
+            // Mark all present button
+            markAllPresentBtn.addEventListener('click', markAllPresent);
+            
+            // Save attendance button
+            saveAttendanceBtn.addEventListener('click', function() {
+                if (currentLectureId === null) return;
+                
+                // In a real app, you would save to server here
+                const lecture = todayLectures.find(l => l.id === currentLectureId);
+                const presentCount = presentStudents.length;
+                const totalCount = presentCount + absentStudents.length;
+                
+                // Show success message
+                alert(`Attendance saved successfully!\n\nCourse: ${lecture.courseCode}\nPresent: ${presentCount}/${totalCount} students`);
+                
+                // Close the panel
+                attendancePanel.classList.remove('active');
+                currentLectureId = null;
+                
+                // Remove active state from all lecture cards
+                document.querySelectorAll('.lecture-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+            });
+            
+            // Select all absent students checkbox
+            selectAllAbsent.addEventListener('change', function() {
+                if (this.checked) {
+                    // Mark all absent students as present
+                    markAllPresent();
+                    this.checked = false;
+                }
+            });
+        }
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
