@@ -1,0 +1,8 @@
+
+
+
+
+INSERT INTO admin(uname, email, pword) 
+VALUES('adminName', 'adminEmail', 'adminPassword');
+
+
