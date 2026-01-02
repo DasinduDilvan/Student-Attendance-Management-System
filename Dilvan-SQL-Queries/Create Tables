@@ -10,19 +10,21 @@ attendance-N,
 medical,
 complain.
 
-
+-- create database
 CREATE DATABASE StudentAttendenceManagement;
 
+-- take the database for create tables
 USE StudentAttendenceManagement;
 
 
+-- create admin table
 CREATE TABLE admin(
 	uname VARCHAR(20),
 	email VARCHAR(50),
 	pword VARCHAR(20),
 );
 
-
+-- create department table
 CREATE TABLE department(
 	Dep_ID INT(2),
 	Dep_Name VARCHAR(100),
@@ -31,7 +33,7 @@ CREATE TABLE department(
 	PRIMARY KEY(Dep_ID)
 );
 
-
+-- create level table
 CREATE TABLE level(
 	level_ID INT(2),
 	level_Name VARCHAR(100),
@@ -40,7 +42,7 @@ CREATE TABLE level(
 	PRIMARY KEY(level_ID)
 );
 
-
+--	 create semester table
 CREATE TABLE semester(
 	Sem_ID INT(2) NOT NULL,
 	Level_ID INT(2),
@@ -51,7 +53,7 @@ CREATE TABLE semester(
 	FOREIGN KEY(level_ID) REFERENCES level(level_ID),
 );
 
-
+-- 	create course table
 CREATE TABLE course(
 	Course_ID VARCHAR(7) NOT NULL,
 	Sem_ID INT(2) ,
@@ -68,7 +70,7 @@ CREATE TABLE course(
 	FOREIGN KEY(Dep_ID) REFERENCES department(Dep_ID)
 );
 
-
+-- create student table
 CREATE TABLE student(
 	S_ID VARCHAR(12),
 	fName VARCHAR(20),
@@ -95,13 +97,13 @@ CREATE TABLE student(
 	FOREIGN KEY(Dep_ID) REFERENCES department(Dep_ID)
 );
 
-
+-- create lecturer table
 CREATE TABLE lecturer(
 	L_ID VARCHAR(12),
 	fName VARCHAR(20),
 	mName VARCHAR(20),
 	lName VARCHAR(20),
-	L_NIC INT(12),
+	L_NIC VARCHAR(12),
 	L_gender VARCHAR(6),
 	S_address VARCHAR(150),
 	L_birthday DATE,
@@ -112,7 +114,7 @@ CREATE TABLE lecturer(
 	PRIMARY KEY(L_ID)
 );
 
-
+-- this attendence tables are dynamic thats why they will create once the admin create a semester in level in department
 attendance-N = Sem_ID * Level_ID * Dep_ID
 
 CREATE TABLE attendance-N(
@@ -126,7 +128,7 @@ CREATE TABLE attendance-N(
 	FOREIGN KEY(Course_ID) REFERENCES course(Course_ID)
 );
 
-
+-- create medical table
 CREATE TBALE medical(
 	Medical_ID INT(10),
 	Absent_Course VARCHAR(7),
@@ -138,7 +140,7 @@ CREATE TBALE medical(
 	FOREIGN KEY(Absent_Course) REFERENCES course(Course_ID)
 );
 
-
+-- create complain table
 CREATE TABLE complain(
 	complain_ID INT(10),
 	SendAs VARCHAR(12),
