@@ -1,0 +1,20 @@
+
+
+
+-- Delete students
+DELETE * FROM student WHERE S_ID = 'TG/2024/2050';
+
+-- Delete lecturers
+DELETE * FROM lecturer WHERE L_ID = 1;
+
+-- Delete courses
+DELETE * FROM course WHERE Course_ID = 'ICT1112';
+
+-- Delete medical records
+DELETE * FROM medical WHERE Medical_ID = 1;
+
+-- Delete complaints
+DELETE * FROM complain WHERE Complain_ID = 1;
+
+
+END...

@@ -1,5 +1,5 @@
 Tables:
-admin,
+admin,  
 department,
 level,
 semester,
@@ -105,7 +105,7 @@ CREATE TABLE lecturer(
 	lName VARCHAR(20),
 	L_NIC VARCHAR(12),
 	L_gender VARCHAR(6),
-	S_address VARCHAR(150),
+	L_address VARCHAR(150),
 	L_birthday DATE,
 	L_email VARCHAR(50),
 	S_contact VARCHAR(10),
@@ -115,7 +115,10 @@ CREATE TABLE lecturer(
 );
 
 -- this attendence tables are dynamic thats why they will create once the admin create a semester in level in department
-attendance-N = Sem_ID * Level_ID * Dep_ID
+attendance-ICT11 = Sem_ID * Level_ID * Dep_ID
+attendance-ICT12 = Sem_ID * Level_ID * Dep_ID
+attendance-ICT21 = Sem_ID * Level_ID * Dep_ID
+attendance-ICT22 = Sem_ID * Level_ID * Dep_ID
 
 CREATE TABLE attendance-N(
 	S_ID VARCHAR(12),
