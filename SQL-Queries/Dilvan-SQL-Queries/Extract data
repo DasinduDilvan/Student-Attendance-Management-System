@@ -1,6 +1,8 @@
 
+
+
 -- Student login
-SELECT S_email, S_password FROM student;
+SELECT S_email, S_password FROM student WHERE S_ID = x;
 
 
 
@@ -32,12 +34,15 @@ SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = 1 AND Level_ID = 1 AND 
 SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = 1 AND Level_ID = 2 AND Dep_ID = 2;
 
 -- for Third Department, Fourth Level, Second Semester Courses
-SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = 2 AND Level_ID = 4 AND Dep_ID = 3;
+SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = x AND Level_ID = 4 AND Dep_ID = 3;
 
 
 
 -- View Attendance for a specific Student
 SELECT * FROM attendanceICT11 WHERE S_ID = 'TG/2024/2050';
+
+
+
 SELECT * FROM attendanceET22 WHERE S_ID = 'TG/2022/2050';
 
 
