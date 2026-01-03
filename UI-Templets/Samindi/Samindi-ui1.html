@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard | TECAMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            height: 80px;
+            background: #1e293b;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .brand {
+            font-size: 26px;
+            font-weight: 600;
+            color: #38bdf8;
+            padding:  0px 30px;
+        }
+
+        .navbar a {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 20px 18px;
+            border-radius: 4px;
+            font-size: 20px;
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ================= CONTENT ================= */
+        section {
+            padding: 20px 30px;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .stat {
+            padding: 15px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+        }
+
+        .warning {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background: #1e293b;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            margin-top: 12px;
+        }
+
+        button:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+    <div class="nav-left">
+        <div class="brand">TECAMS</div>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#medicals">Medicals</a>
+        <a href="#complains">Complains</a>
+        <a href="#news">News</a>
+    </div>
+    <div class="nav-right">
+        <a href="profile.php">Profile</a>
+        <a href="logout.php">Logout</a>
+    </div>
+</nav>
+
+
+
+<!-- ================= DASHBOARD ================= -->
+<br id="dashboard"><br><br><br>
+<section>
+    <h2>Attendance Overview</h2>
+
+    <div class="grid">
+        <div class="stat">
+            <h3>Overall Attendance</h3>
+            <p><strong>82%</strong></p>
+        </div>
+        <div class="stat">
+            <h3>Total Subjects</h3>
+            <p><strong>6</strong></p>
+        </div>
+        <div class="stat">
+            <h3>Low Attendance</h3>
+            <p><strong>1 Subject</strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Subject-wise Attendance</h3>
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>Attended</th>
+                <th>Total</th>
+                <th>Percentage</th>
+            </tr>
+            <tr>
+                <td>Programming</td>
+                <td>18</td>
+                <td>22</td>
+                <td>82%</td>
+            </tr>
+            <tr>
+                <td>Networks</td>
+                <td>14</td>
+                <td>20</td>
+                <td>70%</td>
+            </tr>
+        </table>
+
+        <div class="warning">
+            ⚠ Attendance below 75% detected for Networks
+        </div>
+    </div>
+</section>
+
+<!-- ================= MEDICALS ================= -->
+<br id="medicals"><br>
+<section >
+    <h2>Medical Requests</h2>
+
+    <div class="card">
+        <h3>Submit Medical</h3>
+        <form>
+            <label>Date</label>
+            <input type="date">
+
+            <label>Reason</label>
+            <textarea rows="3"></textarea>
+
+            <label>Upload Medical Document</label>
+            <input type="file">
+
+            <button type="submit">Submit Medical</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Past Medical Requests</h3>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>2025-01-10</td>
+                <td>Fever</td>
+                <td>Approved</td>
+            </tr>
+            <tr>
+                <td>2025-02-02</td>
+                <td>Hospital Visit</td>
+                <td>Pending</td>
+            </tr>
+        </table>
+    </div>
+</section>
+
+<!-- ================= COMPLAINS ================= -->
+<br id="complains"><br>
+<section >
+    <h2>Submit a Complaint</h2>
+
+    <div class="card">
+        <form>
+            <label>To</label>
+            <input type="text" value="University Management" readonly>
+
+            <label>Subject</label>
+            <input type="text" placeholder="Complaint subject">
+
+            <label>Message</label>
+            <textarea rows="6" placeholder="Write your complaint clearly..."></textarea>
+
+            <button type="submit">Send Complaint</button>
+        </form>
+    </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+
+
+-- Create Admins
+INSERT INTO admin(uname, email, pword) 
+VALUES('adminName', 'adminEmail', 'adminPassword');
+
+
+-- Create Departments 
+INSERT INTO department(Dep_ID, Dep_Name, Dep_Code, Dep_Status)
+VALUES(1, 'Information and Communication Technology', 'ICT', 'Active');
+
+
+-- Create Levels in Departments
+INSERT INTO level(level_ID, level_Name, level_Code, level_Status)
+VALUES(1, 'Level 1', 'L1', 'Active');
+
+
+-- Create Semesters in Levels and Departments
+INSERT INTO semester(Sem_ID, Level_ID, Dep_ID, Sem_Name)
+VALUES(1, 1, 1, 'Semester 1');
+
+
+-- Create Courses in Semesters, Levels and Departments
+INSERT INTO course(Course_ID, Sem_ID, Level_ID, Dep_ID, Course_Name, Lecturer_ID, Credits, Lecture_hours, NoOfLectures)
+VALUES('ICT1112', 1, 1, 1, 'Information System', 'Lecrer01', 2, 2, 15),
+      ('ICT1132', 1, 1, 1, 'Introduction to Programming', 'Lecrer02', 2, 2, 15);
+
+
+-- Create Students (Registration)
+INSERT INTO student(S_ID, fName, mName, lName, S_email, S_password, TECMIS_Uname, TECMIS_Pword, S_address, S_NIC, S_gender, S_birthday, S_AccYear, S_contact, S_RegDate, S_Status, Sem_ID, Level_ID, Dep_ID)
+VALUES('STU001', 'Amila', 'Kumara','AmilaK', 'password123', 'No. 123, Colombo', 199205678901, 'Male', '2000-05-15', '2020', '0711234567', '2020-01-01 08:00:00', 'Active', 1, 1, 1);
+
+
+-- Create Lecturers (Registration)
+INSERT INTO lecturer(L_ID, fName, mName, lName, L_NIC, L_gender, S_address, L_birthday, L_email, S_contact, S_RegDate, S_Status)
+VALUES (1, 'Csir', 'Csir', 'Csir', '123456789V', 'Male', '123 Main St', '1980-05-15', 'csir@uor.ac.lk', '0712345678', '2023-09-01', 'Active'),
+(2, 'laka', 'laka', 'laka', '987654321V', 'Male', '456 Elm St', '1985-08-20', 'laka@uor.ac.lk', '0723456789', '2023-09-01', 'Active');
+
+
+
+-- Mark attendence table will create per semester-level-department
+INSERT INTO attendanceICT11(Attendance_ID, S_ID, Course_ID, Attendance_Date, Attendance_Status)
+VALUES(1, 'TG/2024/2050', 'ICT1112', '2023-10-01', 'Present'),
+    (2, 'TG/2024/2050', 'ICT1132', '2023-10-01', 'Absent');
+
+INSERT INTO attendanceET22(Attendance_ID, S_ID, Course_ID, Attendance_Date, Attendance_Status)
+VALUES(1, 'TG/2022/2050', 'ET2212', '2023-10-01', 'Present'),
+    (2, 'TG/2022/2050', 'ET2232', '2023-10-01', 'Present');
+
+INSERT INTO attendanceBST41(Attendance_ID, S_ID, Course_ID, Attendance_Date, Attendance_Status)
+VALUES(1, 'TG/2021/2050', 'BST4112', '2023-10-01', 'Absent'),
+    (2, 'TG/2021/2050', 'BST4132', '2023-10-01', 'Present');
+
+
+
+
+-- Create Medical Records
+INSERT INTO medical(Medical_ID, S_ID, Absent_Course, Absent_date, Medical_Reason, Med_Ref_No, Medical_Status )
+VALUES(1, 'TG/2024/2050', 'ICT1132', '2023-10-01', 'Headeche', 'MED12345', 'Approved'),
+      (2, 'TG/2022/2050', 'ET2212', '2023-10-01', 'Injury', 'MED67890', 'Pending');
+
+
+
+-- Create Complaints
+INSERT INTO complain(complain_ID, SendAs, complain_title, complain_discription, complain_dateTime, Complain_State)
+VALUES(1, 'TG/2024/2050', 'Issue with Course Material', 'The course material for ICT1112 is outdated.', '2023-10-02 10:30:00', 'Open'),
+      (2, 'TG/2022/2050', 'Lecture Timing Conflict', 'The lecture timings for ET2212 conflict with another course.', '2023-10-02 11:00:00', 'In Progress');
+    
+
+
+
+END...

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Attendance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* Left Panel - Tree View */
+        .left-panel {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .panel-title i {
+            font-size: 1.3rem;
+        }
+
+        .tree-container {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .tree {
+            list-style: none;
+        }
+
+        .tree-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background-color: #f1f6ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .tree-header:hover {
+            background-color: #e8efff;
+        }
+
+        .tree-header.active {
+            background-color: #e0ebff;
+        }
+
+        .tree-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tree-toggle {
+            transition: var(--transition);
+        }
+
+        .tree-toggle.rotated {
+            transform: rotate(90deg);
+        }
+
+        .tree-children {
+            list-style: none;
+            padding-left: 2rem;
+            margin-top: 0.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .tree-children.show {
+            max-height: 1000px;
+        }
+
+        .child-item {
+            padding: 0.6rem 1rem;
+            background-color: #f9fafc;
+            margin-bottom: 0.4rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .child-item:hover {
+            background-color: #f1f5fd;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .item-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .item-actions button:hover {
+            color: var(--primary-color);
+        }
+
+        /* Right Panel - Form */
+        .right-panel {
+            flex: 2;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        .form-title i {
+            font-size: 1.5rem;
+        }
+
+        .form-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .form-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #888;
+            transition: var(--transition);
+        }
+
+        .step.active .step-circle {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        .form-content {
+            margin-bottom: 2rem;
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: #f1f3f9;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e4e7f1;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            display: none;
+        }
+
+        .success-message i {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message h3 {
+            color: var(--success-color);
+            margin-bottom: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .form-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .form-steps::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-university"></i>
+            <h1>Attendance Management System</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="#"><i class="fas fa-users"></i> Students</a>
+            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        
+        <div class="user-profile">
+            <img src="https://ui-avatars.com/api/?name=Admin+User&background=4361ee&color=fff&size=128" alt="Admin">
+            <div>
+                <h4>Admin User</h4>
+                <p style="font-size: 0.8rem; color: #666;">Administrator</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Panel - Tree View -->
+        <div class="left-panel">
+            <div class="panel-title">
+                <i class="fas fa-sitemap"></i>
+                <h2>University Structure</h2>
+            </div>
+            
+            <div class="tree-container">
+                <ul class="tree" id="universityTree">
+                    <!-- Tree structure will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Panel - Form -->
+        <div class="right-panel">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i>
+                <h2>Add New Structure</h2>
+            </div>
+            
+            <!-- Form Steps Indicator -->
+            <div class="form-steps">
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Department</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Academic Year</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Batch</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Semester & Courses</div>
+                </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="form-content">
+                <!-- Step 1: Department -->
+                <div class="form-step active" id="formStep1">
+                    <div class="form-group">
+                        <label for="deptName"><i class="fas fa-building"></i> Department Name</label>
+                        <input type="text" id="deptName" placeholder="e.g., Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label for="deptCode"><i class="fas fa-code"></i> Department Code</label>
+                        <input type="text" id="deptCode" placeholder="e.g., CS">
+                    </div>
+                    <div class="form-group">
+                        <label for="deptHod"><i class="fas fa-user-tie"></i> Head of Department</label>
+                        <input type="text" id="deptHod" placeholder="e.g., Dr. John Smith">
+                    </div>
+                </div>
+                
+                <!-- Step 2: Academic Year -->
+                <div class="form-step" id="formStep2">
+                    <div class="form-group">
+                        <label for="academicYear"><i class="fas fa-calendar-alt"></i> Academic Year</label>
+                        <select id="academicYear">
+                            <option value="">Select Academic Year</option>
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2024-2025">2024-2025</option>
+                            <option value="2025-2026">2025-2026</option>
+                            <option value="2026-2027">2026-2027</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="yearStartDate"><i class="fas fa-calendar-day"></i> Start Date</label>
+                        <input type="date" id="yearStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="yearEndDate"><i class="fas fa-calendar-day"></i> End Date</label>
+                        <input type="date" id="yearEndDate">
+                    </div>
+                </div>
+                
+                <!-- Step 3: Batch -->
+                <div class="form-step" id="formStep3">
+                    <div class="form-group">
+                        <label for="batchName"><i class="fas fa-users"></i> Batch Name</label>
+                        <input type="text" id="batchName" placeholder="e.g., 2023 Batch">
+                    </div>
+                    <div class="form-group">
+                        <label for="batchStrength"><i class="fas fa-user-friends"></i> Number of Students</label>
+                        <input type="number" id="batchStrength" placeholder="e.g., 120">
+                    </div>
+                    <div class="form-group">
+                        <label for="batchCoordinator"><i class="fas fa-chalkboard-teacher"></i> Batch Coordinator</label>
+                        <input type="text" id="batchCoordinator" placeholder="e.g., Prof. Jane Doe">
+                    </div>
+                </div>
+                
+                <!-- Step 4: Semester & Courses -->
+                <div class="form-step" id="formStep4">
+                    <div class="form-group">
+                        <label for="semesterNumber"><i class="fas fa-layer-group"></i> Semester Number</label>
+                        <select id="semesterNumber">
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseCount"><i class="fas fa-book"></i> Number of Courses</label>
+                        <input type="number" id="courseCount" placeholder="e.g., 6" min="1" max="10">
+                    </div>
+                    <div id="coursesContainer">
+                        <!-- Courses will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Structure Added Successfully!</h3>
+                    <p>The new department, year, batch, and semester have been added to the system.</p>
+                    <button class="btn btn-primary" id="addAnotherBtn" style="margin-top: 1.5rem;">
+                        <i class="fas fa-plus"></i> Add Another Structure
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions" id="formActions">
+                <button class="btn btn-secondary" id="prevBtn" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>University Attendance Management System &copy; 2023 | Developed for Academic Use</p>
+    </div>
+
+    <script>
+        // Sample data for the tree structure
+        const universityData = [
+            {
+                id: 1,
+                name: "Information Communication Technology",
+                code: "ICT",
+                years: [
+                    {
+                        id: 101,
+                        name: "2023-2024",
+                        batches: [
+                            {
+                                id: 1001,
+                                name: "2023 Batch",
+                                semesters: [
+                                    { id: 10001, name: "Semester 1", courses: 6 },
+                                    { id: 10002, name: "Semester 2", courses: 6 }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Engineering Technology",
+                code: "ET",
+                years: [
+                    {
+                        id: 201,
+                        name: "2023-2024",
+                        batches: [
+                            {
+                                id: 2001,
+                                name: "2023 Batch",
+                                semesters: [
+                                    { id: 20001, name: "Semester 1", courses: 5 }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "Bio Systems Technology",
+                code: "BST",
+                years: [
+                    {
+                        id: 301,
+                        name: "2022-2023",
+                        batches: [
+                            {
+                                id: 3001,
+                                name: "2022 Batch",
+                                semesters: [
+                                    { id: 30001, name: "Semester 3", courses: 7 },
+                                    { id: 30002, name: "Semester 4", courses: 7 }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const universityTree = document.getElementById('universityTree');
+        const formSteps = document.querySelectorAll('.form-step');
+        const stepIndicators = document.querySelectorAll('.step');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const successMessage = document.getElementById('successMessage');
+        const formActions = document.getElementById('formActions');
+        const addAnotherBtn = document.getElementById('addAnotherBtn');
+        const courseCountInput = document.getElementById('courseCount');
+        const coursesContainer = document.getElementById('coursesContainer');
+
+        let currentStep = 1;
+
+        // Initialize the tree view
+        function renderTree() {
+            universityTree.innerHTML = '';
+            
+            universityData.forEach(department => {
+                const deptItem = document.createElement('li');
+                deptItem.className = 'tree-item';
+                deptItem.innerHTML = `
+                    <div class="tree-header" data-id="${department.id}">
+                        <div class="tree-title">
+                            <i class="fas fa-building"></i>
+                            <span>${department.name} (${department.code})</span>
+                        </div>
+                        <div class="tree-toggle">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <ul class="tree-children" id="dept-${department.id}">
+                        ${department.years.map(year => `
+                            <li class="tree-item">
+                                <div class="tree-header" data-id="${year.id}">
+                                    <div class="tree-title">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>${year.name}</span>
+                                    </div>
+                                    <div class="tree-toggle">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <ul class="tree-children" id="year-${year.id}">
+                                    ${year.batches.map(batch => `
+                                        <li class="tree-item">
+                                            <div class="tree-header" data-id="${batch.id}">
+                                                <div class="tree-title">
+                                                    <i class="fas fa-users"></i>
+                                                    <span>${batch.name}</span>
+                                                </div>
+                                                <div class="tree-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                            <ul class="tree-children" id="batch-${batch.id}">
+                                                ${batch.semesters.map(semester => `
+                                                    <li class="child-item">
+                                                        <div class="tree-title">
+                                                            <i class="fas fa-layer-group"></i>
+                                                            <span>${semester.name} (${semester.courses} courses)</span>
+                                                        </div>
+                                                        <div class="item-actions">
+                                                            <button title="Edit"><i class="fas fa-edit"></i></button>
+                                                            <button title="Delete"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </li>
+                                                `).join('')}
+                                            </ul>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                universityTree.appendChild(deptItem);
+            });
+            
+            // Add event listeners for tree toggle
+            document.querySelectorAll('.tree-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const toggleIcon = this.querySelector('.tree-toggle i');
+                    const children = this.parentElement.querySelector('.tree-children');
+                    
+                    if (children) {
+                        children.classList.toggle('show');
+                        toggleIcon.classList.toggle('rotated');
+                        this.classList.toggle('active');
+                    }
+                });
+            });
+        }
+
+        // Form step navigation
+        function updateFormSteps() {
+            // Hide all form steps
+            formSteps.forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show current form step
+            document.getElementById(`formStep${currentStep}`).classList.add('active');
+            
+            // Update step indicators
+            stepIndicators.forEach((step, index) => {
+                if (index + 1 < currentStep) {
+                    step.classList.remove('active');
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.remove('completed');
+                }
+            });
+            
+            // Update buttons
+            prevBtn.disabled = currentStep === 1;
+            
+            if (currentStep === 4) {
+                nextBtn.innerHTML = 'Submit <i class="fas fa-check"></i>';
+                nextBtn.classList.remove('btn-primary');
+                nextBtn.classList.add('btn-success');
+            } else {
+                nextBtn.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+                nextBtn.classList.remove('btn-success');
+                nextBtn.classList.add('btn-primary');
+            }
+        }
+
+        // Generate course input fields
+        function generateCourseInputs(count) {
+            coursesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const courseDiv = document.createElement('div');
+                courseDiv.className = 'form-group';
+                courseDiv.innerHTML = `
+                    <label for="course${i}"><i class="fas fa-book-open"></i> Course ${i} Name</label>
+                    <input type="text" id="course${i}" placeholder="e.g., Data Structures and Algorithms">
+                `;
+                coursesContainer.appendChild(courseDiv);
+            }
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateFormSteps();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < 4) {
+                // Validate current step before proceeding
+                let isValid = true;
+                
+                if (currentStep === 1) {
+                    const deptName = document.getElementById('deptName').value;
+                    const deptCode = document.getElementById('deptCode').value;
+                    
+                    if (!deptName.trim() || !deptCode.trim()) {
+                        alert('Please fill in all required fields in the Department step.');
+                        isValid = false;
+                    }
+                } else if (currentStep === 2) {
+                    const academicYear = document.getElementById('academicYear').value;
+                    
+                    if (!academicYear) {
+                        alert('Please select an academic year.');
+                        isValid = false;
+                    }
+                } else if (currentStep === 3) {
+                    const batchName = document.getElementById('batchName').value;
+                    const batchStrength = document.getElementById('batchStrength').value;
+                    
+                    if (!batchName.trim() || !batchStrength) {
+                        alert('Please fill in all required fields in the Batch step.');
+                        isValid = false;
+                    }
+                }
+                
+                if (isValid) {
+                    currentStep++;
+                    updateFormSteps();
+                    
+                    // Generate course inputs if we're moving to step 4
+                    if (currentStep === 4) {
+                        const count = parseInt(courseCountInput.value) || 6;
+                        generateCourseInputs(count);
+                    }
+                }
+            } else {
+                // Submit the form
+                submitForm();
+            }
+        });
+
+        courseCountInput.addEventListener('change', function() {
+            const count = parseInt(this.value) || 1;
+            if (count > 10) {
+                this.value = 10;
+                generateCourseInputs(10);
+            } else if (count < 1) {
+                this.value = 1;
+                generateCourseInputs(1);
+            } else {
+                generateCourseInputs(count);
+            }
+        });
+
+        addAnotherBtn.addEventListener('click', () => {
+            // Reset form
+            document.getElementById('deptName').value = '';
+            document.getElementById('deptCode').value = '';
+            document.getElementById('deptHod').value = '';
+            document.getElementById('academicYear').value = '';
+            document.getElementById('yearStartDate').value = '';
+            document.getElementById('yearEndDate').value = '';
+            document.getElementById('batchName').value = '';
+            document.getElementById('batchStrength').value = '';
+            document.getElementById('batchCoordinator').value = '';
+            document.getElementById('semesterNumber').value = '';
+            document.getElementById('courseCount').value = '6';
+            coursesContainer.innerHTML = '';
+            
+            // Reset to step 1
+            currentStep = 1;
+            updateFormSteps();
+            
+            // Hide success message
+            successMessage.style.display = 'none';
+            formActions.style.display = 'flex';
+        });
+
+        // Submit form function
+        function submitForm() {
+            // In a real application, you would send data to a server here
+            // For this demo, we'll simulate a successful submission
+            
+            // Show success message
+            successMessage.style.display = 'block';
+            formActions.style.display = 'none';
+            
+            // Add the new structure to the tree
+            const newDept = {
+                id: universityData.length + 1,
+                name: document.getElementById('deptName').value || 'New Department',
+                code: document.getElementById('deptCode').value || 'ND',
+                years: [
+                    {
+                        id: (universityData.length + 1) * 100,
+                        name: document.getElementById('academicYear').value || '2023-2024',
+                        batches: [
+                            {
+                                id: (universityData.length + 1) * 1000,
+                                name: document.getElementById('batchName').value || 'New Batch',
+                                semesters: [
+                                    {
+                                        id: (universityData.length + 1) * 10000,
+                                        name: `Semester ${document.getElementById('semesterNumber').value || '1'}`,
+                                        courses: parseInt(document.getElementById('courseCount').value) || 6
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+            
+            universityData.push(newDept);
+            renderTree();
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTree();
+            updateFormSteps();
+            
+            // Set default dates for academic year
+            const today = new Date();
+            const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+            
+            document.getElementById('yearStartDate').value = today.toISOString().split('T')[0];
+            document.getElementById('yearEndDate').value = nextYear.toISOString().split('T')[0];
+            
+            // Generate initial course inputs
+            generateCourseInputs(6);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .semester-selector {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            background: white;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .download-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.2rem;
+            font-size: 1.5rem;
+        }
+
+        .summary-icon.overall {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+
+        .summary-icon.perfect {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+
+        .summary-icon.warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: #ff9800;
+        }
+
+        .summary-icon.risk {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: var(--warning);
+        }
+
+        .summary-content h3 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+
+        .summary-content .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .summary-content .desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Subject Analytics Section */
+        .analytics-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Enhanced Table Design */
+        .subjects-table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            overflow-x: auto;
+        }
+
+        .subjects-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .subjects-table thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .subjects-table th {
+            padding: 1.2rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .subjects-table tbody tr {
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .subjects-table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .subjects-table td {
+            padding: 1.2rem 1rem;
+            vertical-align: middle;
+        }
+
+        /* Subject Info Cell */
+        .subject-info-cell {
+            min-width: 220px;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .subject-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Chart Cell */
+        .chart-cell {
+            width: 160px;
+            padding: 0.5rem 1rem;
+        }
+
+        .mini-chart-container {
+            width: 140px;
+            height: 60px;
+            position: relative;
+        }
+
+        /* Attendance Stats Cell */
+        .attendance-stats {
+            min-width: 150px;
+        }
+
+        .attendance-percentage {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .attendance-count {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Status Cell */
+        .status-cell {
+            min-width: 120px;
+        }
+
+        .attendance-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .attendance-excellent {
+            background-color: rgba(4, 209, 130, 0.15);
+            color: #04d182;
+        }
+
+        .attendance-good {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+
+        .attendance-warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: #ff9800;
+        }
+
+        .attendance-risk {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: var(--warning);
+        }
+
+        /* Progress Cell */
+        .progress-cell {
+            min-width: 200px;
+        }
+
+        .progress-bar-container {
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 0.3rem;
+        }
+
+        /* Last Absent Cell */
+        .last-absent-cell {
+            min-width: 120px;
+        }
+
+        .last-absent-date {
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        /* Trend Cell */
+        .trend-cell {
+            min-width: 100px;
+        }
+
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Monthly Trends Section */
+        .trends-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .trends-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-light);
+            margin-top: 2rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .subjects-table-container {
+                font-size: 0.9rem;
+            }
+            
+            .subjects-table th, 
+            .subjects-table td {
+                padding: 1rem 0.8rem;
+            }
+            
+            .mini-chart-container {
+                width: 120px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .subjects-table-container {
+                overflow-x: auto;
+            }
+            
+            .subjects-table {
+                min-width: 1100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-chart-line"></i> Attendance Analytics Dashboard</h1>
+                <p>Detailed analysis of your attendance across 10 subjects</p>
+            </div>
+            <div class="header-right">
+                <select class="semester-selector" id="semester-selector">
+                    <option value="spring2023" selected>Spring 2023</option>
+                    <option value="fall2022">Fall 2022</option>
+                    <option value="spring2022">Spring 2022</option>
+                </select>
+                <button class="download-btn" id="download-btn">
+                    <i class="fas fa-download"></i> Export Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-icon overall">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Overall Attendance</h3>
+                    <div class="value">84%</div>
+                    <div class="desc">126 of 150 lectures attended</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon perfect">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Perfect Attendance</h3>
+                    <div class="value">4 Subjects</div>
+                    <div class="desc">100% in 4 out of 10 subjects</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Needs Attention</h3>
+                    <div class="value">3 Subjects</div>
+                    <div class="desc">Below 75% attendance</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon risk">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>At Risk</h3>
+                    <div class="value">1 Subject</div>
+                    <div class="desc">Below 60% attendance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Analytics Section -->
+        <div class="analytics-section">
+            <h2 class="section-title"><i class="fas fa-book-open"></i> Subject-wise Attendance Analysis</h2>
+            
+            <div class="subjects-table-container">
+                <table class="subjects-table">
+                    <thead>
+                        <tr>
+                            <th>Subject & Instructor</th>
+                            <th>Attendance Chart</th>
+                            <th>Attendance Stats</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Last Absent</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Subject 1: Web Development -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Web Development</div>
+                                <div class="subject-details">Dr. Sarah Johnson • CS305</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="webdev-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">100%</div>
+                                <div class="attendance-count">15 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-excellent">Excellent</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 100%; background-color: #04d182;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Never</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-up" style="color: #04d182;"></i>
+                                    <span>Consistent</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 2: Data Structures & Algorithms -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Data Structures & Algorithms</div>
+                                <div class="subject-details">Prof. Michael Chen • CS302</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="algorithms-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">67%</div>
+                                <div class="attendance-count">10 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-risk">At Risk</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 67%; background-color: #f72585;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>67%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 18, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-down" style="color: #f72585;"></i>
+                                    <span>Declining</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 3: Database Systems -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Database Systems</div>
+                                <div class="subject-details">Dr. Robert Williams • CS308</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="database-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">73%</div>
+                                <div class="attendance-count">11 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-warning">Warning</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 73%; background-color: #ff9800;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>73%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 15, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-minus" style="color: #ff9800;"></i>
+                                    <span>Stable</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 4: Mathematics -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Mathematics</div>
+                                <div class="subject-details">Dr. Emily Davis • MA201</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="math-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">100%</div>
+                                <div class="attendance-count">15 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-excellent">Excellent</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 100%; background-color: #04d182;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Never</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-up" style="color: #04d182;"></i>
+                                    <span>Consistent</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 5: Software Engineering -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Software Engineering</div>
+                                <div class="subject-details">Prof. David Miller • CS310</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="software-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">93%</div>
+                                <div class="attendance-count">14 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-good">Good</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 93%; background-color: #4361ee;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>93%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Mar 22, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-up" style="color: #4361ee;"></i>
+                                    <span>Improving</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 6: Computer Networks -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Computer Networks</div>
+                                <div class="subject-details">Dr. Lisa Wang • CS312</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="networks-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">87%</div>
+                                <div class="attendance-count">13 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-good">Good</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 87%; background-color: #4361ee;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>87%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 5, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-minus" style="color: #4361ee;"></i>
+                                    <span>Stable</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 7: Operating Systems -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Operating Systems</div>
+                                <div class="subject-details">Prof. James Wilson • CS315</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="os-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">80%</div>
+                                <div class="attendance-count">12 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-good">Good</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 80%; background-color: #4361ee;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>80%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 10, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-up" style="color: #4361ee;"></i>
+                                    <span>Improving</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 8: Artificial Intelligence -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Artificial Intelligence</div>
+                                <div class="subject-details">Dr. Sophia Lee • CS320</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="ai-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">60%</div>
+                                <div class="attendance-count">9 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-risk">Critical</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 60%; background-color: #f72585;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>60%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 20, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-down" style="color: #f72585;"></i>
+                                    <span>Declining</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 9: English Communication -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">English Communication</div>
+                                <div class="subject-details">Prof. Jennifer Brown • EN101</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="english-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">100%</div>
+                                <div class="attendance-count">15 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-excellent">Excellent</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 100%; background-color: #04d182;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Never</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-up" style="color: #04d182;"></i>
+                                    <span>Consistent</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Subject 10: Probability & Statistics -->
+                        <tr>
+                            <td class="subject-info-cell">
+                                <div class="subject-name">Probability & Statistics</div>
+                                <div class="subject-details">Dr. Richard Taylor • MA205</div>
+                            </td>
+                            <td class="chart-cell">
+                                <div class="mini-chart-container">
+                                    <canvas id="stats-chart"></canvas>
+                                </div>
+                            </td>
+                            <td class="attendance-stats">
+                                <div class="attendance-percentage">67%</div>
+                                <div class="attendance-count">10 / 15 lectures</div>
+                            </td>
+                            <td class="status-cell">
+                                <span class="attendance-badge attendance-warning">Warning</span>
+                            </td>
+                            <td class="progress-cell">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 67%; background-color: #ff9800;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>0%</span>
+                                        <span>67%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="last-absent-cell">
+                                <div class="last-absent-date">Apr 12, 2023</div>
+                            </td>
+                            <td class="trend-cell">
+                                <div class="trend-indicator">
+                                    <i class="fas fa-arrow-down" style="color: #ff9800;"></i>
+                                    <span>Declining</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monthly Trends Section -->
+        <div class="trends-section">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Monthly Attendance Trend</h2>
+            <div class="trends-container">
+                <canvas id="monthly-trend-chart"></canvas>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #4361ee;"></div>
+                    <div class="legend-text">Your Attendance</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #04d182;"></div>
+                    <div class="legend-text">University Average</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: rgba(67, 97, 238, 0.1);"></div>
+                    <div class="legend-text">Target Zone (75-100%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="footer-note">
+            <p><i class="fas fa-info-circle"></i> Note: Attendance data is updated daily. Contact your department if you find any discrepancies.</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart colors
+            const colors = {
+                primary: '#4361ee',
+                success: '#04d182',
+                warning: '#ff9800',
+                danger: '#f72585',
+                lightGray: '#e9ecef',
+                gray: '#6c757d'
+            };
+
+            // Function to create mini doughnut charts for table
+            function createMiniDoughnutChart(canvasId, present, total, color) {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const absent = total - present;
+                
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [present, absent],
+                            backgroundColor: [color, colors.lightGray],
+                            borderWidth: 0,
+                            hoverOffset: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        },
+                        cutout: '60%',
+                        rotation: -90,
+                        circumference: 180
+                    }
+                });
+            }
+
+            // Create mini charts for each subject
+            const charts = [
+                { id: 'webdev-chart', present: 15, total: 15, color: colors.success },
+                { id: 'algorithms-chart', present: 10, total: 15, color: colors.danger },
+                { id: 'database-chart', present: 11, total: 15, color: colors.warning },
+                { id: 'math-chart', present: 15, total: 15, color: colors.success },
+                { id: 'software-chart', present: 14, total: 15, color: colors.primary },
+                { id: 'networks-chart', present: 13, total: 15, color: colors.primary },
+                { id: 'os-chart', present: 12, total: 15, color: colors.primary },
+                { id: 'ai-chart', present: 9, total: 15, color: colors.danger },
+                { id: 'english-chart', present: 15, total: 15, color: colors.success },
+                { id: 'stats-chart', present: 10, total: 15, color: colors.warning }
+            ];
+
+            charts.forEach(chart => {
+                createMiniDoughnutChart(chart.id, chart.present, chart.total, chart.color);
+            });
+
+            // Monthly Trend Chart (Line)
+            const monthlyCtx = document.getElementById('monthly-trend-chart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Your Attendance',
+                            data: [82, 85, 80, 84, 87, 84],
+                            borderColor: colors.primary,
+                            backgroundColor: 'rgba(67, 97, 238, 0.05)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.primary,
+                            pointRadius: 5,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'University Average',
+                            data: [80, 82, 81, 83, 84, 83],
+                            borderColor: colors.success,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.success,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 70,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    }
+                }
+            });
+
+            // Add animation to progress bars
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                    bar.style.transition = 'width 1.5s ease-in-out';
+                }, 300);
+            });
+
+            // Semester selector functionality
+            document.getElementById('semester-selector').addEventListener('change', function() {
+                const semester = this.value;
+                alert(`Loading data for ${this.options[this.selectedIndex].text}...`);
+                // In a real app, this would fetch new data from the server
+            });
+
+            // Download button functionality
+            document.getElementById('download-btn').addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-download"></i> Export Report';
+                    alert('Attendance report generated and downloaded successfully!');
+                }, 1500);
+            });
+
+            // Add hover effect to table rows
+            const tableRows = document.querySelectorAll('.subjects-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
