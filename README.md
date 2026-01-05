@@ -59,7 +59,7 @@ We follow the **MVC (Model-View-Controller)** architecture pattern for clean sep
 - View student lists (year & department-wise)
 - Attendance summary per subject
 
-### 4. Student Module (Dasindu)
+### 4. Student Module
 - Student dashboard
 - View attendance by subject with percentage calculation
 - Low-attendance warnings (below threshold)
@@ -95,8 +95,8 @@ We follow the **MVC (Model-View-Controller)** architecture pattern for clean sep
 | **Senitha** | Admin Control Panel (enable/disable users, system configuration) |
 | **Maduka** | Lecturer Attendance Panel, add/remove lecturers, assign subjects to lecturers |
 | **Dulsha** | Add & remove Years (Batches), Departments, Courses, Subject management |
-| **Dasindu** | **Complete Student Module** (dashboard, medical requests, complaints, news & updates) |
-| **Samindi** | **Admin Medical & Complaint Module** (medical review & approvals, complaint review and closure) |
+| **Dasindu** | Student Module (dashboard, medical requests, complaints, news & updates) |
+| **Samindi** | Admin Medical & Complaint Module (medical review & approvals, complaint review and closure) |
 
 ## 🚀 Expected Outcome
 A fully functional, deployable Attendance Management Mini ERP that reflects real university workflows, includes attendance tracking, medical handling, complaint management, and demonstrates full-stack development and team collaboration skills using MVC architecture.
