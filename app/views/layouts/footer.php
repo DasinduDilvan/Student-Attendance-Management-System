@@ -1,0 +1,1 @@
+// common footer for all pages

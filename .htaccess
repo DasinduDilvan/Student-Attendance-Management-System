@@ -1,0 +1,5 @@
+
+RewriteEngine On
+
+# Redirect root request to public folder
+RewriteRule ^$ public/index.php [L]

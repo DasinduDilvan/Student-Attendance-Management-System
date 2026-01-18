@@ -42,3 +42,24 @@ UPDATE complain SET Complain_Status = 'Resolved' WHERE Complain_ID = 1;
 
 
 END...
+
+
+
+
+<?php
+// controller.php
+
+require_once "model.php";
+require_once "view.php";
+
+showForm();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $userId = $_POST['user_id'];
+
+    $username = getUserById($userId);
+
+    showResult($username);
+}
+
+?>

@@ -1,13 +1,12 @@
 
-
 <?php
-// view for student medical submission
-// communicate with MedicalSubmitController to display medical submission for students
+// ComplaintSubmit.php
+// communicate with ComplaintSendController to display complaint submission for students
 
 /*function showForm() {
     echo '
 
-        <h1>Student Medicals</h1>
+        <h1>Student Complaints</h1>
 
     <hr>
         <form method="post">
@@ -23,7 +22,7 @@ function showResult($username) {
     if ($username) {
         echo "<h2>Status: $username </h2>";
     } else {
-        echo "<h2>Status: Medical Send Error </h2>";
+        echo "<h2>Status: Complaint Send Error </h2>";
     }
 }
 
