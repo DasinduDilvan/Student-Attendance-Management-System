@@ -11,18 +11,19 @@ require_once "../views/student/Dashboard.php";
 
 stdnavbar();
 
-// Output session variables that were set on previous page
 if(isset($_SESSION["student"])) {
 
     $userId = $_SESSION["student"];
 
         if($userId != null){
-            $username = getUserById($userId);
-
-            showResult($username);
+            $rowdata = getUserById($userId);
+            showfname($rowdata);
+            $tablename =  findAttendanceTable($rowdata, $userId);
+            showtablename($tablename);
+            $attendance = getStdAttendence($tablename, $userId);
+            showattendance($attendance);
             exit();
         }
-
   } 
   else {
     echo "No session data found.";

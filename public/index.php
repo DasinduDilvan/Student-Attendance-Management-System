@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if($userId != null){
         $_SESSION["student"] = $userId;
-        header("Location: ../app/controllers/AttendanceController.php?user_id=" . $userId);
+        header("Location: ../app/controllers/AttendanceController.php");
         exit();
     }
 }
@@ -21,7 +21,7 @@ echo "
     <p>This is the main entry point of the application.</p>
     <form method='post'>
         <label>User ID:</label>
-        <input type='number' name='user_id' required>
+        <input type='text' name='user_id' required>
         <button type='submit'>Find User</button>
 </body>
 </html>

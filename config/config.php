@@ -1,11 +1,11 @@
 <?PHP
 
-$usertname = "root";
+$username = "root";
 $servername = "localhost";
 $password = "";
 $database = "TECSAMS";
 
-$conn = mysqli_connect($host, $username, $password, $database);
+$conn = mysqli_connect($servername, $username, $password, $database);
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());

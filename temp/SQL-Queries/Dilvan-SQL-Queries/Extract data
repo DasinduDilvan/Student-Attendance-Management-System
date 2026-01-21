@@ -80,6 +80,7 @@ function showForm() {
 function showResult($username) {
     if ($username) {
         echo "<h2>User Found: $username ✅</h2>";
+        echo "id: " . $row["id"]. " - Name: " . $row["firstname"]. " " . $row["lastname"]. "<br>";
     } else {
         echo "<h2>User Not Found ❌</h2>";
     }
