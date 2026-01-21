@@ -22,130 +22,125 @@ if(mysqli_query($conn, $createdb)){
     mysqli_select_db($conn, "TECSAMS");
 
 $createtables = "CREATE TABLE IF NOT EXISTS admin(
-        id INT AUTO_INCREMENT,
-        uname VARCHAR(20),
-        email VARCHAR(50),
-        pword VARCHAR(255),
-        PRIMARY KEY(id)
+        username VARCHAR(50) NOT NULL,
+        email VARCHAR(50) NOT NULL,
+        password VARCHAR(255) NOT NULL
     );
     
-    -- create department table
     CREATE TABLE IF NOT EXISTS department(
-        Dep_ID INT(2),
-        Dep_Name VARCHAR(100),
-        Dep_Code VARCHAR(10),
-        Dep_Status VARCHAR(10),
-        PRIMARY KEY(Dep_ID)
+        dep_id INT AUTO_INCREMENT PRIMARY KEY,
+        dep_code VARCHAR(10) NOT NULL,
+        dep_name VARCHAR(100) NOT NULL,
+        status VARCHAR(20) NOT NULL
     );
-
-    -- create level table
-    CREATE TABLE IF NOT EXISTS level(
-        level_ID INT(2),
-        level_Name VARCHAR(100),
-        level_Code VARCHAR(10),
-        level_Status VARCHAR(10),
-        PRIMARY KEY(level_ID)
+    
+    CREATE TABLE IF NOT EXISTS batch(
+        batch_id INT AUTO_INCREMENT PRIMARY KEY,
+        batch_name VARCHAR(50) NOT NULL,
+        status VARCHAR(20) NOT NULL
     );
-
-    --	 create semester table
-    CREATE TABLE IF NOT EXISTS semester(
-        Sem_ID INT(2) NOT NULL,
-        Level_ID INT(2) NOT NULL,
-        Dep_ID INT(2) NOT NULL,
-        Sem_Name VARCHAR(50) NOT NULL,
-        PRIMARY KEY(Sem_ID, level_ID, Dep_ID),
-        FOREIGN KEY(Dep_ID) REFERENCES department(Dep_ID),
-        FOREIGN KEY(level_ID) REFERENCES level(level_ID)
+    
+    CREATE TABLE IF NOT EXISTS level_semester(
+        level_id INT(2) NOT NULL,
+        level_name VARCHAR(50) NOT NULL,
+        sem_id INT(2) NOT NULL,
+        sem_name VARCHAR(50) NOT NULL,
+        dep_id INT NOT NULL,
+        batch_id INT NOT NULL,
+        status VARCHAR(50) NOT NULL,
+        PRIMARY KEY(level_id, sem_id),
+        FOREIGN KEY(dep_id) REFERENCES department(dep_id),
+        FOREIGN KEY(batch_id) REFERENCES batch(batch_id)
     );
-
-    -- 	create course table
+    
     CREATE TABLE IF NOT EXISTS course(
-        Course_ID VARCHAR(7) NOT NULL,
-        Sem_ID INT(2) ,
-        Level_ID INT(2),
-        Dep_ID INT(2),
-        Course_Name VARCHAR(100) NOT NULL,
-        Lecturer_ID VARCHAR(100),
-        Credits INT(1),
-        Lecture_hours INT(2),
-        NoOfLectures INT(2),
-        PRIMARY KEY (Course_ID),
-        FOREIGN KEY(Sem_ID) REFERENCES semester(Sem_ID),
-        FOREIGN KEY(level_ID) REFERENCES level(level_ID),
-        FOREIGN KEY(Dep_ID) REFERENCES department(Dep_ID)
+        course_id INT,
+        course_code VARCHAR(50) PRIMARY KEY,
+        course_name VARCHAR(50) NOT NULL,
+        lecture_days INT NOT NULL,
+        credits INT NOT NULL,
+        lecturer_hours INT NOT NULL,
+        sem_id INT(2) NOT NULL,
+        level_id INT(2) NOT NULL,
+        dep_id INT NOT NULL,
+        FOREIGN KEY (level_id, sem_id) REFERENCES level_semester(level_id, sem_id),
+        FOREIGN KEY (dep_id) REFERENCES department(dep_id)
     );
-
-    -- create student table
-    CREATE TABLE IF NOT EXISTS student(
-        S_ID VARCHAR(12),
-        fName VARCHAR(20),
-        mName VARCHAR(20),
-        lName VARCHAR(20),
-        S_email VARCHAR(50),
-        S_password VARCHAR(255),
-        TECMIS_Uname VARCHAR(6),
-        TECMIS_Pword VARCHAR(255),
-        S_address VARCHAR(150),
-        S_NIC VARCHAR(12),
-        S_gender VARCHAR(6),
-        S_birthday DATE,
-        S_AccYear VARCHAR(10),
-        S_contact VARCHAR(10),
-        S_RegDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        S_Status VARCHAR(10),
-        Sem_ID INT(2) ,
-        Level_ID INT(2),
-        Dep_ID INT(2),
-        PRIMARY KEY(S_ID),
-        FOREIGN KEY(Sem_ID) REFERENCES semester(Sem_ID),
-        FOREIGN KEY(Level_ID) REFERENCES level(level_ID),
-        FOREIGN KEY(Dep_ID) REFERENCES department(Dep_ID)
-    );
-
-    -- create lecturer table
+    
     CREATE TABLE IF NOT EXISTS lecturer(
-        L_ID VARCHAR(12),
-        fName VARCHAR(20),
-        mName VARCHAR(20),
-        lName VARCHAR(20),
-        L_NIC VARCHAR(12),
-        L_gender VARCHAR(6),
-        L_address VARCHAR(150),
-        L_birthday DATE,
-        L_email VARCHAR(50),
-        S_contact VARCHAR(10),
-        S_RegDate DATETIME,
-        S_Status VARCHAR(10),
-        PRIMARY KEY(L_ID)
+        lec_id INT AUTO_INCREMENT PRIMARY KEY,
+        lec_reg_num VARCHAR(25) NOT NULL,
+        lec_fName VARCHAR(50) NOT NULL,
+        lec_mName VARCHAR(50) NOT NULL,
+        lec_lName VARCHAR(50) NOT NULL,
+        lec_email VARCHAR(50) NOT NULL,
+        lec_contact_num VARCHAR(20) NOT NULL,
+        lec_gender VARCHAR(10) NOT NULL,
+        lec_address VARCHAR(100) NOT NULL,
+        lec_nic VARCHAR(50) NOT NULL,
+        lec_birthday DATE NOT NULL,
+        lec_status VARCHAR(20) NOT NULL,
+        lec_acc_created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-
-
-    -- create medical table
+    
+    CREATE TABLE IF NOT EXISTS lecturer_course(
+        lec_id INT NOT NULL,
+        course_code VARCHAR(50) NOT NULL,
+        PRIMARY KEY(lec_id, course_code),
+        FOREIGN KEY (lec_id) REFERENCES lecturer(lec_id),
+        FOREIGN KEY (course_code) REFERENCES course(course_code)
+    );
+    
+    CREATE TABLE IF NOT EXISTS student(
+        stu_id INT AUTO_INCREMENT PRIMARY KEY,
+        stu_reg_num VARCHAR(25) NOT NULL,   
+        stu_fname VARCHAR(50) NOT NULL,
+        stu_mname VARCHAR(50) NOT NULL,
+        stu_lname VARCHAR(50) NOT NULL,
+        stu_email VARCHAR(50) NOT NULL,
+        stu_contact_num VARCHAR(20) NOT NULL,
+        stu_gender VARCHAR(10) NOT NULL,
+        stu_address VARCHAR(100) NOT NULL,
+        stu_nic VARCHAR(50) NOT NULL,
+        stu_birthday DATE NOT NULL,
+        stu_status VARCHAR(20) NOT NULL,
+        stu_acc_created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        sem_id INT(2) NOT NULL,
+        level_id INT(2) NOT NULL,
+        dep_id INT NOT NULL,
+        batch_id INT NOT NULL,
+        FOREIGN KEY (level_id, sem_id) REFERENCES level_semester(level_id, sem_id),
+        FOREIGN KEY (dep_id) REFERENCES department(dep_id),
+        FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
+    );
+    
     CREATE TABLE IF NOT EXISTS medical(
-        Medical_ID INT AUTO_INCREMENT,
-        S_ID VARCHAR(12),
-        Absent_Course VARCHAR(7),
-        Absent_date DATE,
-        Medical_Reason VARCHAR(250),
-        Med_Ref_No VARCHAR(10),
-        Medical_State VARCHAR(10),
-        PRIMARY KEY(Medical_ID),
-        FOREIGN KEY(Absent_Course) REFERENCES course(Course_ID),
-        FOREIGN KEY(S_ID) REFERENCES student(S_ID)
+        medical_id INT AUTO_INCREMENT PRIMARY KEY,
+        medical_reason TEXT NOT NULL,
+        medical_ref_no VARCHAR(50) UNIQUE,
+        submit_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        stu_id INT NOT NULL,
+        lec_day DATE NOT NULL,
+        course_code VARCHAR(50) NOT NULL,
+        FOREIGN KEY (stu_id) REFERENCES student(stu_id),
+        FOREIGN KEY (course_code) REFERENCES course(course_code)
     );
-
-    -- create complain table
-    CREATE TABLE IF NOT EXISTS complain(
-        complain_ID INT AUTO_INCREMENT,
-        SendAs VARCHAR(12),
-        complain_title VARCHAR(50),
-        complain_discription VARCHAR(250),
-        complain_dateTime DATETIME DEFAULT CURRENT_TIMESTAMP, 
-        Complain_State VARCHAR(10),
-        PRIMARY KEY(complain_ID)
+    
+    CREATE TABLE IF NOT EXISTS complains(
+        complain_id INT AUTO_INCREMENT PRIMARY KEY,
+        subject VARCHAR(50) NOT NULL,
+        complain_type VARCHAR(50),
+        reason TEXT NOT NULL,
+        create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        resolved_time DATETIME,
+        admin_remark TEXT,
+        stu_id INT NOT NULL,
+        status VARCHAR(20) NOT NULL,
+        FOREIGN KEY (stu_id) REFERENCES student(stu_id)
     );
-
+    
 ";
+    
 
 
 $queries = explode(';', $createtables);
@@ -176,58 +171,21 @@ mysqli_close($conn);
  attendance-ICT12 = Sem_ID * Level_ID * Dep_ID
  attendance-ICT21 = Sem_ID * Level_ID * Dep_ID
  attendance-ICT22 = Sem_ID * Level_ID * Dep_ID
+*//*
 
-CREATE TABLE IF NOT EXISTS ICT11(
-    S_ID VARCHAR(12),
-    Course_ID VARCHAR(7),
-    Lecture_Day INT(2),
-    Date DATE,
+CREATE TABLE IF NOT EXISTS attendance_ICT11 (
+    stu_id INT NOT NULL,
+    course_code VARCHAR(50) NOT NULL,
+    lecture_no INT NOT NULL,
+    lecture_date DATE NOT NULL,
     attendance INT(1) NOT NULL,
-    PRIMARY KEY(S_ID, Course_ID, Lecture_Day),
-    FOREIGN KEY(S_ID) REFERENCES student(S_ID),
-    FOREIGN KEY(Course_ID) REFERENCES course(Course_ID)
+    PRIMARY KEY (stu_id, course_code, lecture_no),
+    FOREIGN KEY (stu_id) REFERENCES student(stu_id),
+    FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
-
-INSERT INTO ICT11
-(S_ID, Course_ID, Lecture_Day, Date, attendance)
-VALUES
-('TG/2022/0001', 'ICT101', 1, '2025-01-08', 1),
-('TG/2022/0001', 'ICT101', 2, '2025-01-10', 0),
-('TG/2023/1002', 'ICT101', 1, '2025-01-08', 1),
-('TG/2023/1002', 'ICT101', 2, '2025-01-10', 1),
-('TG/2024/2003', 'ICT101', 1, '2025-01-08', 0),
-('TG/2024/2003', 'ICT101', 2, '2025-01-10', 1);
-
-
-INSERT INTO ICT11
-(S_ID, Course_ID, Lecture_Day, Date, attendance)
-VALUES
--- TG/2022/0001
-('TG/2022/0001', 'ICT101', 3, '2025-01-08', 1),
-('TG/2022/0001', 'ICT101', 4, '2025-01-10', 1),
-('TG/2022/0001', 'ICT102', 3, '2025-01-09', 1),
-('TG/2022/0001', 'ICT102', 4, '2025-01-16', 1),
-('TG/2022/0001', 'ICT103', 3, '2025-01-11', 0),
-('TG/2022/0001', 'ICT103', 4, '2025-01-18', 1),
-
--- TG/2023/1002
-('TG/2023/1002', 'ICT101', 3, '2025-01-08', 1),
-('TG/2023/1002', 'ICT101', 4, '2025-01-10', 1),
-('TG/2023/1002', 'ICT102', 3, '2025-01-09', 0),
-('TG/2023/1002', 'ICT102', 4, '2025-01-16', 1),
-('TG/2023/1002', 'ICT103', 3, '2025-01-11', 1),
-('TG/2023/1002', 'ICT103', 4, '2025-01-18', 1),
-
--- TG/2024/2003
-('TG/2024/2003', 'ICT101', 3, '2025-01-08', 0),
-('TG/2024/2003', 'ICT101', 4, '2025-01-10', 1),
-('TG/2024/2003', 'ICT102', 3, '2025-01-09', 1),
-('TG/2024/2003', 'ICT102', 4, '2025-01-16', 1),
-('TG/2024/2003', 'ICT103', 3, '2025-01-11', 0),
-('TG/2024/2003', 'ICT103', 4, '2025-01-18', 1);
-
 */
+
 
 
 ?>
