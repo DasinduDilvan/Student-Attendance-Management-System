@@ -3,8 +3,7 @@
 --admin 
     --department
         --batch
-            --level
-                --semester
+            --level_semseter    
                     --course
                             --lecturer
                                 --lecturer_course < M:N
@@ -12,7 +11,7 @@
                                     --complaince
                                     --attendence_n
                                     
-CREATE DATABASE Student_Attenance_Management_System;
+CREATE DATABASE Student_Attenance_Management_System ;
 USE  Student_Attenance_Management_System ;
 
 --create table admin
@@ -60,6 +59,7 @@ CREATE TABLE course(
     course_name VARCHAR(50) NOT NULL,
     credits INT(5) NOT  NULL,
     lecturer_hours INT(5) NOT NULL,
+    lecturer_days INT(5) NOT NULL ,
     sem_id INT(2) NOT NULL , 
     level_id  INT(2)NOT NULL,
     dep_id INT NOT NULL,
@@ -69,8 +69,8 @@ CREATE TABLE course(
 
 --create table lecturer
 CREATE TABLE lecturer(
-    lec_id INT(5) NOT NULL, 
-    lec_reg_num VARCHAR(25) PRIMARY KEY,
+    lec_id INT(5) AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+    lec_reg_num VARCHAR(25) NOT NULL,
     lec_fName VARCHAR(50) NOT NULL,
     lec_mName VARCHAR(50) NOT NULL,
     lec_lName VARCHAR(50) NOT NULL,
@@ -86,18 +86,18 @@ CREATE TABLE lecturer(
 
 --create table lecturer_course
 CREATE TABLE lecturer_course(
-    lec_reg_num VARCHAR(25) NOT NULL,
+    lec_id INT(5) NOT NULL ,
     course_code VARCHAR(50) NOT NULL,
-    PRIMARY KEY(lec_reg_num , course_code),
-    FOREIGN KEY (lec_reg_num) REFERENCES lecturer(lec_reg_num),
+    PRIMARY KEY(lec_id , course_code),
+    FOREIGN KEY (lec_id) REFERENCES lecturer(lec_id),
     FOREIGN KEY (course_code) REFERENCES course(course_code)
 
 );
 
---create table student <stu_id=TG/XXXX/XXXX>
+--create table student <stu_reg_num=TG/XXXX/XXXX>
 CREATE TABLE student(
-    stu_id VARCHAR(25) PRIMARY KEY UNIQUE,  
-    stu_reg_num INT NOT NULL ,
+    stu_id  INT AUTO_INCREMENT PRIMARY KEY UNIQUE,  
+    stu_reg_num VARCHAR(25) NOT NULL ,
     stu_fname VARCHAR(50) NOT NULL,
     stu_mname VARCHAR(50) NOT NULL,
     stu_lname VARCHAR(50) NOT NUlL,
@@ -124,7 +124,7 @@ CREATE TABLE medical(
     medical_reason TEXT NOT NULL,
     medical_ref_no VARCHAR(50) UNIQUE,
     submit_at DATETIME ,
-    stu_id VARCHAR(25) NOT NULL ,
+    stu_id INT NOT NULL ,
     course_code VARCHAR(50) NOT NULL,
     FOREIGN KEY (stu_id) REFERENCES student(stu_id),
     FOREIGN KEY (course_code) REFERENCES course(course_code)
@@ -139,14 +139,14 @@ CREATE TABLE complains(
     create_time DATETIME ,
     resolved_time DATETIME ,
     admin_remark TEXT,
-    stu_id VARCHAR(25) NOT NULL,
+    stu_id INT NOT NULL,
     status VARCHAR(20) NOT NULL,
     FOREIGN KEY (stu_id) REFERENCES student(stu_id)
 );
 
 --create table attendence_n
 CREATE TABLE attendence_n(
-    stu_id VARCHAR(25) NOT NULL,
+    stu_id INT NOT NULL,
     course_code VARCHAR(50) NOT NULL,
     lec_day INT(2) NOT NULL,
     daytime DATETIME NOT NULL,
