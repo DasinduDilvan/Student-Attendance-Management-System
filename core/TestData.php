@@ -21,10 +21,10 @@ VALUES ('admin', 'admin@tecsams.lk', 'admin');
 
  
 $conn->query("
-INSERT INTO department (dep_name, status) VALUES
-('Information Communication Technology', 'ACTIVE'),
-('Engineering Technology', 'ACTIVE'),
-('Bio Systems Technology', 'ACTIVE');
+INSERT INTO department (dep_code, dep_name, status) VALUES
+('ICT', 'Information Communication Technology', 'ACTIVE'),
+('ET','Engineering Technology', 'ACTIVE'),
+('BST', 'Bio Systems Technology', 'ACTIVE');
 ");
 
 
@@ -46,16 +46,16 @@ VALUES
 (1, 'Level 1', 2, 'Semester 2', 1, 4, 'active'),
 
 -- Level 2
-(2, 'Level 2', 1, 'Semester 1', 1, 4, 'active'),
-(2, 'Level 2', 2, 'Semester 2', 1, 4, 'active'),
+(2, 'Level 2', 1, 'Semester 1', 1, 3, 'active'),
+(2, 'Level 2', 2, 'Semester 2', 1, 3, 'active'),
 
 -- Level 3
-(3, 'Level 3', 1, 'Semester 1', 1, 4, 'active'),
-(3, 'Level 3', 2, 'Semester 2', 1, 4, 'active'),
+(3, 'Level 3', 1, 'Semester 1', 1, 2, 'active'),
+(3, 'Level 3', 2, 'Semester 2', 1, 2, 'active'),
 
 -- Level 4
-(4, 'Level 4', 1, 'Semester 1', 1, 4, 'active'),
-(4, 'Level 4', 2, 'Semester 2', 1, 4, 'active');
+(4, 'Level 4', 1, 'Semester 1', 1, 1, 'active'),
+(4, 'Level 4', 2, 'Semester 2', 1, 1, 'active');
 ");
 
  
@@ -81,20 +81,20 @@ VALUES
 
 $conn->query("
 INSERT INTO lecturer
-(lec_reg_num, lec_fName, lec_mName, lec_lName, lec_email,
+(lec_reg_num, lec_context, lec_fName, lec_mName, lec_lName, lec_email,
  lec_contact_num, lec_gender, lec_address, lec_nic,
  lec_birthday, lec_status, lec_acc_created_date)
 VALUES
-('LEC001', 'Nimal', 'K', 'Perera', 'nimal@ict.lk', '0771111111', 'Male',
+('LEC001', 'Prof.', 'Nimal', 'K', 'Perera', 'nimal@ict.lk', '0771111111', 'Male',
  'Colombo', '901234567V', '1990-05-12', 'active', '2024-01-01'),
 
-('LEC002', 'Kamal', 'S', 'Fernando', 'kamal@ict.lk', '0772222222', 'Male',
+('LEC002', 'Dr.', 'Kamal', 'S', 'Fernando', 'kamal@ict.lk', '0772222222', 'Male',
  'Gampaha', '891234568V', '1989-07-18', 'active', '2024-01-01'),
 
-('LEC003', 'Sunil', 'M', 'Silva', 'sunil@et.lk', '0773333333', 'Male',
+('LEC003', 'Prof.', 'Sunil', 'M', 'Silva', 'sunil@et.lk', '0773333333', 'Male',
  'Kandy', '881234569V', '1988-03-22', 'active', '2024-01-01'),
 
-('LEC004', 'Anusha', 'P', 'Jayasinghe', 'anusha@sft.lk', '0774444444', 'Female',
+('LEC004', 'Prof.', 'Anusha', 'P', 'Jayasinghe', 'anusha@sft.lk', '0774444444', 'Female',
  'Matara', '921234560V', '1992-11-10', 'active', '2024-01-01');
 
 ");

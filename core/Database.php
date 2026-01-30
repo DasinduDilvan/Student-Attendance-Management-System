@@ -70,6 +70,7 @@ $createtables = "CREATE TABLE IF NOT EXISTS admin(
     CREATE TABLE IF NOT EXISTS lecturer(
         lec_id INT AUTO_INCREMENT PRIMARY KEY,
         lec_reg_num VARCHAR(25) NOT NULL,
+        lec_context VARCHAR(50) NOT NULL,
         lec_fName VARCHAR(50) NOT NULL,
         lec_mName VARCHAR(50) NOT NULL,
         lec_lName VARCHAR(50) NOT NULL,

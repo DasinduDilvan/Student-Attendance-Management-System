@@ -10,7 +10,7 @@ function getUserById($userId) {
 	require_once __DIR__ . '/../../config/config.php';
     global $conn;
 
-    $sql = "SELECT fName, Sem_ID, Level_ID, Dep_ID FROM student WHERE S_ID = '$userId'";
+    $sql = "SELECT stu_fname, sem_id, level_id, dep_id FROM student WHERE stu_id = '$userId'";
     $result = mysqli_query($conn, $sql);
 
 
@@ -29,15 +29,15 @@ function findAttendanceTable($row, $userId) {
     require_once __DIR__ . '/../../config/config.php';
     global $conn;
 
-    $DepartmentCode = $row['Dep_ID'];
+    $DepartmentCode = $row['dep_id'];
 
-    $finddep = "SELECT Dep_Code FROM department WHERE Dep_ID = '$DepartmentCode'";  
+    $finddep = "SELECT dep_code FROM department WHERE dep_id = '$DepartmentCode'";  
 
     $depresult = mysqli_query($conn, $finddep);
 
     if (mysqli_num_rows($depresult) > 0) {
         while($depcode = mysqli_fetch_assoc($depresult)) {
-            $DeplvlSem = $depcode['Dep_Code'] . $row['Level_ID'] . $row['Sem_ID'];
+            $DeplvlSem = $depcode['dep_code'] . $row['level_id'] . $row['sem_id'];
             return $DeplvlSem;
         }
       } else {
@@ -46,13 +46,13 @@ function findAttendanceTable($row, $userId) {
 }
 
 function getStdAttendence($DeplvlSem, $userId) {
-    $attendanceTable = $DeplvlSem;
+    $attendanceTable = "attendance_".$DeplvlSem;
     $stdid = $userId;
 
     require_once __DIR__ . '/../../config/config.php';
     global $conn;
 
-    $sqlq = "SELECT * FROM $attendanceTable WHERE S_ID = '$stdid'";
+    $sqlq = "SELECT * FROM $attendanceTable WHERE stu_id = '$stdid'";
     $attendance = mysqli_query($conn, $sqlq);
         
     $atdcube = [];
@@ -60,19 +60,67 @@ function getStdAttendence($DeplvlSem, $userId) {
 
     if (mysqli_num_rows($attendance) > 0) {
       while ($row = mysqli_fetch_assoc($attendance)) {
-  
-          if (!in_array($row['Course_ID'], $seenCourses)) {
               $atdcube[] = $row;
-              $seenCourses[] = $row['Course_ID'];
-              $atdcube['attendance'] = $atdcube['attendance'] + 1;
-          }
-  
       }
     return $atdcube;
 
     } else {
       echo "0 results in attendance table.";
     }
+}
+
+function getCourseDetails($row, $userId) {
+    require_once __DIR__ . '/../../config/config.php';
+    global $conn;
+
+    $sql = "SELECT course_code, course_name, lecture_days, credits, lecturer_hours FROM course WHERE sem_id = '".$row['sem_id']."' AND level_id = '".$row['level_id']."' AND dep_id = '".$row['dep_id']."'";
+    $result = mysqli_query($conn, $sql);
+
+    $courses = [];
+
+    if (mysqli_num_rows($result) > 0) {
+        while($course = mysqli_fetch_assoc($result)) {
+            $courses[] = $course;
+        }
+      return $courses;
+      } else {
+        return null;
+      }
+}
+
+function   getLecturerCourse(){
+  require_once __DIR__ . '/../../config/config.php';
+  global $conn;
+
+  $sql = "SELECT * FROM lecturer_course";
+  $result = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($result) > 0) {
+    while($lecturer_course = mysqli_fetch_assoc($result)) {
+        $lecturers_course[] = $lecturer_course;
+    }
+    return $lecturers_course;
+  } else {
+    return null;
+  }
+}
+
+function getLecturers(){
+  require_once __DIR__ . '/../../config/config.php';
+  global $conn;
+
+  $sql = "SELECT lec_id, lec_fName, lec_mName, lec_lName FROM lecturer";
+  $result = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($result) > 0) {
+    while($lecturer = mysqli_fetch_assoc($result)) {
+        $lecturers[] = $lecturer;
+    }
+    return $lecturers;
+  } else {
+    return null;
+  }
+
 }
 
 ?>
