@@ -26,32 +26,49 @@ if(isset($_SESSION["student"])) {
         $lecturersCouese = getLecturerCourse();
         $lecturers = getLecturers();
 
-        $lectueresAndCourses = [];
-        foreach($coursedetails as $leccos){
-          foreach($lecturersCouese as $cosdtls){
-            if($leccos['course_code'] == $cosdtls['course_code']){  
-              foreach($lecturers as $lects){
-                if($cosdtls['lec_id'] == $lects['lec_id']){
-                  $lecturerName['lec_full_name'] = $lects['lec_fName']." ".$lects['lec_mName']." ".$lects['lec_lName'];
-                  echo $lecturerName['lec_full_name']."<br>";
-                  $lectueresAndCourses[] = $lects['lec_id'];
-                  $lectueresAndCourses[] = $lecturerName['lec_full_name'];
-                  $lectueresAndCourses[] = $cosdtls['course_code'];
-                  //echo $lectueresAndCourses['lec_id']."-";
-                  //echo $lectueresAndCourses['lec_full_name']."-";
-                  //echo $lectueresAndCourses['lec_cos']."<br>";
+        //$rowdata = stu_fname, sem_id, level_id, dep_id
+        //$tablename = dep_code
+        //$attendance = stu_id, course_code, lecture_no, lecture_date, attendance
+        //$coursedetails = course_code, course_name, lecture_days, credits, lecturer_hours
+        //lecturersCouese = lec_id, course_code
+        //lecturers = lec_id, lec_fName, lec_mName, lec_lName
+
+        //$showFinalOutput = course_id, Course_name, lec_name, attendance, credits, lecturer_hours
+
+        $showFinalOutput = [];
+        foreach($coursedetails as $coslist){
+          $temp = [];
+          $temp['course_name'] = $coslist['course_name'];
+          $temp['course_code'] = $coslist['course_code'];
+
+              $atdcount = 0;
+              foreach($attendance as $atdlist){
+                  if($coslist['course_code'] == $atdlist['course_code']){
+                      $atdcount += $atdlist['attendance'];
+                  }
+              }
+
+              foreach($lecturersCouese as $cosdtls){
+                if($coslist['course_code'] == $cosdtls['course_code']){  
+                  foreach($lecturers as $lects){
+                    if($cosdtls['lec_id'] == $lects['lec_id']){
+                      $lecturerName['lec_full_name'] = $lects['lec_context']."".$lects['lec_fName']." ".$lects['lec_mName']." ".$lects['lec_lName'];
+                      if($coslist['course_code'] == $cosdtls['course_code']){
+                        $temp['lec_full_name'] = $lecturerName['lec_full_name'];
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
-        foreach($lectueresAndCourses as $aaaa){
-          //echo $aaaa['lec_id']."-";
-          //echo $aaaa['lec_full_name']."-";
-          //echo $aaaa['lec_cos']."<br>";
-        }
 
-        showattendance($attendance, $coursedetails,$lectueresAndCourses);
+              $temp['atdcount'] = $atdcount;
+              $temp['lecture_days'] = $coslist['lecture_days'];
+              $temp['credits'] = $coslist['credits'];
+              $temp['lecturer_hours'] = $coslist['lecturer_hours'];
+
+          $showFinalOutput[] = $temp;
+        }
+        showattendance($showFinalOutput);
 
         exit();
     }

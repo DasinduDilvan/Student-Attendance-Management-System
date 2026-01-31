@@ -19,8 +19,8 @@ function showtablename($attandancetable) {
     }
 }
 
-function showattendance($attendance, $coursedetails) {
-    if ($attendance) {
+function showattendance($showFinalOutput) {
+    if ($showFinalOutput) {
     echo '
         <table border="1">
             <tr>
@@ -32,24 +32,16 @@ function showattendance($attendance, $coursedetails) {
                 <th>Lecture Hourse</th>
             </tr>';
 
-    foreach($coursedetails as $coslist){
+    foreach($showFinalOutput as $coslist){
         //echo course_code, course_name, lecture_days, credits, lecturer_hours
         echo "<tr><td>".$coslist['course_code']."</td>";
         echo "<td>".$coslist['course_name']."</td>";
-        //echo "<td>".$coslist['lecturer']."</td>";
-        
-        $atdcount = 0;
-        foreach($attendance as $atdlist){
-          if($coslist['course_code'] == $atdlist['course_code']){
-            $atdcount += $atdlist['attendance'];
-          }
-        }
-        echo "<td>".$atdcount."/".$coslist['lecture_days']."</td>";
+        echo "<td>".$coslist['lec_full_name']."</td>";
+        echo "<td>".$coslist['atdcount']."/".$coslist['lecture_days']."</td>";
         echo "<td>".$coslist['credits']."</td>";
         echo "<td>".$coslist['lecturer_hours']."</td></tr>";
-      }
-    echo '
-    </table>';
+        }
+        echo '</table>';
     } else {
         echo "<h2>No Attendance Records Found </h2>";
     }

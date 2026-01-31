@@ -12,15 +12,45 @@ require_once "../views/student/MedicalSubmit.php";
 stdnavbar();
 
 // Output session variables that were set on previous page
+
+
 if(isset($_SESSION["student"])) {
 
     $userId = $_SESSION["student"];
 
         if($userId != null){
-            $username = getUserById($userId);
+          $rowdata = getUserById($userId);
+          //$rowdata = stu_fname, sem_id, level_id, dep_id
+          $tablename =  findAttendanceTable($rowdata, $userId);
+          //$tablename = dep_code
+          $attendance = getStdAttendence($tablename, $userId);
+          //$attendance = stu_id, course_code, lecture_no, lecture_date, attendance
+          $coursedetails = getCourseDetails($rowdata, $userId);
+          //$coursedetails = course_code, course_name, lecture_days, credits, lecturer_hours
 
-            showResult($username);
-            exit();
+          //echo $attendance 's course_code, course_name, lecture_no, lecture_date if the ['attendance'] is '0' ;
+          foreach($attendance as $atd){
+            $temp = [];
+            if($atd['attendance'] == 0){
+              //find course name from coursedetails
+              $course_name = "";
+              foreach($coursedetails as $cos){
+                if($cos['course_code'] == $atd['course_code']){
+                  $course_name = $cos['course_name'];
+                }
+              }
+              //echo $course_name . " - " . $atd['course_code'] . " - " . $atd['lecture_no'] . " - " . $atd['lecture_date'] . "<br>";
+              $temp['course_name'] = $course_name;
+              $temp['course_code'] = $atd['course_code'];
+              $temp['lecture_no'] = $atd['lecture_no'];
+              $temp['lecture_date'] = $atd['lecture_date'];
+              $temp['attendance'] = $atd['attendance'];
+              $absentdata[] = $temp;
+            }
+          }
+
+          showform($absentdata);
+          exit();
         }
 
   } 

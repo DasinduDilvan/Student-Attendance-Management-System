@@ -109,7 +109,7 @@ function getLecturers(){
   require_once __DIR__ . '/../../config/config.php';
   global $conn;
 
-  $sql = "SELECT lec_id, lec_fName, lec_mName, lec_lName FROM lecturer";
+  $sql = "SELECT lec_id, lec_context, lec_fName, lec_mName, lec_lName FROM lecturer";
   $result = mysqli_query($conn, $sql);
 
   if (mysqli_num_rows($result) > 0) {

@@ -126,6 +126,7 @@ $createtables = "CREATE TABLE IF NOT EXISTS admin(
         FOREIGN KEY (stu_id) REFERENCES student(stu_id),
         FOREIGN KEY (course_code) REFERENCES course(course_code)
     );
+
     
     CREATE TABLE IF NOT EXISTS complains(
         complain_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -186,6 +187,7 @@ CREATE TABLE IF NOT EXISTS attendance_ICT11 (
 );
 
 */
+
 
 
 
