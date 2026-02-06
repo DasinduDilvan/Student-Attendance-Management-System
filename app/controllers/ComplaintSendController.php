@@ -18,7 +18,7 @@ if(isset($_SESSION["student"])) {
 
         if($userId != null){
             $username = getUserById($userId);
-            echo $userId;
+            showForm();
             showResult($username);
             exit();
         }

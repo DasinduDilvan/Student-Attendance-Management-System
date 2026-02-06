@@ -27,11 +27,10 @@ echo '
     height: 70px;
     display: flex;
     align-items: center;
-    box-shadow: 0px 2px 10px #bbb;
+    box-shadow: 0px 2px 9px #bbb;
 }
 
-.stdtopnav .stdnavbut,
-.stdtopnav .stdlogo {
+.stdtopnav .stdnavbut, .stdtopnav .stdlogo, .stdtopnav .stdnavbut_profile, .stdtopnav .stdnavbut_logout {
     color: #000;
     text-decoration: none;
     font-size: 18px;
@@ -43,6 +42,10 @@ echo '
     border: none;
     background: none;
     cursor: pointer;
+}
+
+.stdtopnav .stdnavbut:hover{
+    box-shadow: 0px 11px 0px 0px rgba(255, 255, 255, 1.0);
 }
 
 .stdtopnav .stdnavbut:hover {
@@ -65,16 +68,16 @@ echo '
     height: 100%;
 }
 
-.stdtopnav .stdnavbut.profile:hover {
+.stdtopnav .stdnavbut_profile:hover {
     background-color: #fff;
 }
 
-.stdtopnav .stdnavbut.stdlogout {
+.stdtopnav .stdnavbut_logout {
     background-color: #ce822a;
     color: white;
 }
 
-.stdtopnav .stdnavbut.stdlogout:hover {
+.stdtopnav .stdnavbut_logout:hover {
     background-color: #cb2626;
 }
 </style>
@@ -85,7 +88,7 @@ echo '
 <div class="stdtopnav">
 <form method="get" action="../../core/router.php" style="display:flex; width:100%; height:100%; align-items:center;">
 
-    <a href="?stdnavbar=Dashboard" class="stdlogo">TECSAMS</a>
+    <a class="stdlogo">TECSAMS</a>
 
     <input class="stdnavbut" type="submit" name="stdnavbar" value="Dashboard">
     <input class="stdnavbut" type="submit" name="stdnavbar" value="Medicals">
@@ -93,8 +96,8 @@ echo '
     <input class="stdnavbut" type="submit" name="stdnavbar" value="News">
 
     <div class="right">
-        <input class="stdnavbut profile" type="submit" name="stdnavbar" value="Profile">
-        <input class="stdnavbut logout" type="submit" name="stdnavbar" value="Logout">
+        <input class="stdnavbut_profile" type="submit" name="stdnavbar" value="Profile">
+        <input class="stdnavbut_logout" type="submit" name="stdnavbar" value="Logout">
     </div>
 
 </form>

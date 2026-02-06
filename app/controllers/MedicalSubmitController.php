@@ -48,8 +48,9 @@ if(isset($_SESSION["student"])) {
               $absentdata[] = $temp;
             }
           }
-
+          
           showform($absentdata);
+
           exit();
         }
 
@@ -57,5 +58,23 @@ if(isset($_SESSION["student"])) {
   else {
     echo "No session data found.";
   }
+
+if(isset($_POST['submitMedical'])) {
+    $userId = $_SESSION["student"];
+    $absent = $_POST['absent_course_date'];
+    $reason = $_POST['medical_reason'];
+    $documentPath = uploadDocument($_FILES['document']);
+
+    if ($documentPath) {
+        $result = submitMedicalLeave($userId, $absent, $reason, $documentPath);
+        if ($result) {
+            echo "Medical leave submitted successfully.";
+        } else {
+            echo "Failed to submit medical leave.";
+        }
+    } else {
+        echo "Failed to upload document.";
+    }
+}
 
 ?>

@@ -24,22 +24,19 @@ function showattendance($showFinalOutput) {
     echo '
         <table border="1">
             <tr>
-                <th>Course ID</th>
-                <th>Course Name</th>    
-                <th>Lecturer</th>
-                <th>Attendance</th>
-                <th>Credits</th>
-                <th>Lecture Hourse</th>
+                <th><a style="font-weight: bold; font-size: 22px;">Course</a></th>
+                <th><a style="font-weight: bold; font-size: 22px;">Attendance</a></th>
+                <th><a style="font-weight: bold; font-size: 22px;">Credits</a></th>
+                <th><a style="font-weight: bold; font-size: 22px;">Lecture Hourse</a></th>
             </tr>';
 
     foreach($showFinalOutput as $coslist){
         //echo course_code, course_name, lecture_days, credits, lecturer_hours
-        echo "<tr><td>".$coslist['course_code']."</td>";
-        echo "<td>".$coslist['course_name']."</td>";
-        echo "<td>".$coslist['lec_full_name']."</td>";
-        echo "<td>".$coslist['atdcount']."/".$coslist['lecture_days']."</td>";
-        echo "<td>".$coslist['credits']."</td>";
-        echo "<td>".$coslist['lecturer_hours']."</td></tr>";
+        echo "<tr><td><a style='font-weight: bold; font-size: 22px; '>";
+        echo $coslist['course_name']."</a><br>".$coslist['course_code']." by ".$coslist['lec_full_name']."</td>";
+        echo "<td><a style='font-weight: bold; font-size: 22px;'>".$coslist['atdcount']."/".$coslist['lecture_days']."</a></td>";
+        echo "<td><a style='font-weight: bold; font-size: 22px;'>".$coslist['credits']."</a></td>";
+        echo "<td><a style='font-weight: bold; font-size: 22px;'>".$coslist['lecturer_hours']."</a></td></tr>";
         }
         echo '</table>';
     } else {

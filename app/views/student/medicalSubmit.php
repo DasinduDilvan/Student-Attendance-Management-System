@@ -10,7 +10,7 @@ function showform($absentdata) {
         <h1>Student Medicals</h1>
         <form method="post">
             <label>Select Absent Course date Course:</label>
-            <select name="course" required>
+            <select name="absent_course_date" required>
             <option value="">-- Select --</option>';
 
             foreach($absentdata as $absents){ 
