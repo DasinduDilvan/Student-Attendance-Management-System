@@ -1,0 +1,65 @@
+
+
+
+-- Update Student Information
+UPDATE student SET fNAME = 'New First Name' WHERE S_ID = 'TG/2024/2050';
+UPDATE student SET mNAME = 'New Middle Name' WHERE S_ID = 'TG/2024/2050';
+UPDATE student SET lNAME = 'New Last Name' WHERE S_ID = 'TG/2024/2050';
+UPDATE student SET S_password = 'NewPassword123' WHERE S_ID = 'TG/2024/2050';
+
+
+-- Update Lecturer Information
+UPDATE lecturer SET L_fname = 'New First Name' WHERE L_ID = 1;
+UPDATE lecturer SET L_mname = 'New Middle Name' WHERE L_ID = 1;
+UPDATE lecturer SET L_lname = 'New Last Name' WHERE L_ID = 1;
+UPDATE lecturer SET L_password = 'NewPassword123' WHERE L_ID = 1;
+
+
+-- Enable Disable Students
+UPDATE student SET S_Status = 'Disable' WHERE S_ID = 'TG/2024/2050';
+
+
+-- Enable Disable Lecturers
+UPDATE lecturer SET L_Status = 'Disable' WHERE L_ID = 1;
+
+
+-- Update Course Information
+UPDATE course SET Course_Name = 'Advanced Programming', Credits = 4 WHERE Course_ID = 'ICT1112';
+
+
+-- Give attendence with Medicals
+UPDATE attendanceICT11 SET Attendance_Status = 'Present' WHERE S_ID = 'TG/2024/2050' AND Attendance_Date = '2023-10-01' AND Course_ID = 'ICT1132';
+UPDATE attendanceET22 SET Attendance_Status = 'Present' WHERE S_ID = 'TG/2022/2050' AND Attendance_Date = '2023-10-01' AND Course_ID = 'ET2212';
+
+
+-- Update Medical Records
+UPDATE medical SET Medical_Status = 'Reviewed' WHERE Medical_ID = 1;
+
+
+-- Update Complaints
+UPDATE complain SET Complain_Status = 'Resolved' WHERE Complain_ID = 1;
+
+
+
+END...
+
+
+
+
+<?php
+// controller.php
+
+require_once "model.php";
+require_once "view.php";
+
+showForm();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $userId = $_POST['user_id'];
+
+    $username = getUserById($userId);
+
+    showResult($username);
+}
+
+?>

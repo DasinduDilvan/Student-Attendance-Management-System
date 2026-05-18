@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Attendance Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #0066cc;
+            --light-blue: #f0f5ff;
+            --dark-gray: #1a1a1a;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #e5e7eb;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--white);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* ============ NAVBAR ============ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-left a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-left a:hover {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .nav-left a.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-section:hover {
+            background-color: var(--light-gray);
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), #0099ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .profile-info p:first-child {
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ DASHBOARD ============ */
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--light-blue), var(--white));
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 102, 204, 0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .subjects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .subject-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .subject-header h3 {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+        }
+
+        .lecture-count {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .attendance-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin: 0.75rem 0;
+            overflow: hidden;
+        }
+
+        .attendance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), #0099ff);
+            border-radius: 4px;
+        }
+
+        .attendance-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* ============ MEDICAL SECTION ============ */
+        .medical-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .request-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .request-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .request-info h3 {
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .request-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .status-approved {
+            background-color: #dcfce7;
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* ============ COMPLAINTS ============ */
+        .complaint-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-blue), #0099ff);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 102, 204, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            background-color: #dcfce7;
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #bbf7d0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ MODALS ============ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.3s ease;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--dark-gray);
+        }
+
+        .news-item {
+            padding: 1rem;
+            border-left: 3px solid var(--primary-blue);
+            margin-bottom: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 0.25rem;
+        }
+
+        .news-item h3 {
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .news-date {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-item p {
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        /* ============ PROFILE MODAL ============ */
+        .profile-details {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 0.5rem;
+        }
+
+        .detail-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-value {
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .edit-btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .edit-btn:hover {
+            background-color: #0052a3;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-left {
+                gap: 1rem;
+            }
+
+            .nav-left a {
+                font-size: 0.85rem;
+            }
+
+            .nav-right {
+                gap: 1rem;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .subjects-container {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .request-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .status-badge {
+                margin-top: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-left {
+                gap: 0.5rem;
+            }
+
+            .nav-left a {
+                font-size: 0.75rem;
+            }
+
+            .logout-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
+            <a href="#" class="nav-link" data-section="medical">Medical Requests</a>
+            <a href="#" class="nav-link" data-section="complaints">Complaints</a>
+            <a href="#" class="nav-link" data-section="news">News</a>
+        </div>
+        <div class="nav-right">
+            <div class="profile-section" id="profileBtn">
+                <div class="profile-avatar">AJ</div>
+                <div class="profile-info">
+                    <p>Alex Johnson</p>
+                    <p>Student ID: 2024001</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <div class="main-content">
+        <!-- ============ DASHBOARD SECTION ============ -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1>Attendance Dashboard</h1>
+                    <p>Track your attendance across all subjects and lectures</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Overall Attendance</h3>
+                        <div class="stat-value">85.6%</div>
+                        <p>Above 75% required threshold</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Lectures</h3>
+                        <div class="stat-value">145</div>
+                        <p>Across all subjects</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Present</h3>
+                        <div class="stat-value">124</div>
+                        <p>With medical certificates</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Absent</h3>
+                        <div class="stat-value">21</div>
+                        <p>Requires medical requests</p>
+                    </div>
+                </div>
+
+                <h2 style="color: var(--dark-gray); margin: 2rem 0 1rem; font-size: 1.3rem;">Subject-wise Attendance</h2>
+                <div class="subjects-container">
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>Data Structures</h3>
+                            <span class="lecture-count">32 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 90%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>28 Present</span>
+                            <span>90%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Smith</p>
+                    </div>
+
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>Web Development</h3>
+                            <span class="lecture-count">28 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 82%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>23 Present</span>
+                            <span>82%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Johnson</p>
+                    </div>
+
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>Database Management</h3>
+                            <span class="lecture-count">26 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>22 Present</span>
+                            <span>85%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Williams</p>
+                    </div>
+
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>Software Engineering</h3>
+                            <span class="lecture-count">30 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 87%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>26 Present</span>
+                            <span>87%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Brown</p>
+                    </div>
+
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>Cloud Computing</h3>
+                            <span class="lecture-count">29 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 79%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>23 Present</span>
+                            <span>79%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Davis</p>
+                    </div>
+
+                    <div class="subject-card">
+                        <div class="subject-header">
+                            <h3>AI & Machine Learning</h3>
+                            <span class="lecture-count">24 lectures</span>
+                        </div>
+                        <div class="attendance-bar">
+                            <div class="attendance-fill" style="width: 88%;"></div>
+                        </div>
+                        <div class="attendance-label">
+                            <span>21 Present</span>
+                            <span>88%</span>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Lecturer: Prof. Miller</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ MEDICAL SECTION ============ -->
+        <section id="medical" class="section">
+            <div class="medical-container">
+                <div class="dashboard-header" style="margin-bottom: 2rem;">
+                    <h1>Medical Requests</h1>
+                    <p>Manage your medical certificates and absence requests</p>
+                </div>
+
+                <div class="request-card">
+                    <div class="request-info">
+                        <h3>Data Structures - Lecture 15</h3>
+                        <p><strong>Date:</strong> December 20, 2024</p>
+                        <p><strong>Submitted:</strong> December 21, 2024</p>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Medical certificate attached</p>
+                    </div>
+                    <span class="status-badge status-approved">Approved</span>
+                </div>
+
+                <div class="request-card">
+                    <div class="request-info">
+                        <h3>Web Development - Lecture 22</h3>
+                        <p><strong>Date:</strong> December 19, 2024</p>
+                        <p><strong>Submitted:</strong> December 20, 2024</p>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Medical certificate attached</p>
+                    </div>
+                    <span class="status-badge status-pending">Pending</span>
+                </div>
+
+                <div class="request-card">
+                    <div class="request-info">
+                        <h3>Database Management - Lecture 18</h3>
+                        <p><strong>Date:</strong> December 15, 2024</p>
+                        <p><strong>Submitted:</strong> December 16, 2024</p>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Medical certificate attached</p>
+                    </div>
+                    <span class="status-badge status-approved">Approved</span>
+                </div>
+
+                <div class="request-card">
+                    <div class="request-info">
+                        <h3>Software Engineering - Lecture 10</h3>
+                        <p><strong>Date:</strong> December 12, 2024</p>
+                        <p><strong>Submitted:</strong> December 13, 2024</p>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Medical certificate attached</p>
+                    </div>
+                    <span class="status-badge status-rejected">Rejected</span>
+                </div>
+
+                <h2 style="color: var(--dark-gray); margin: 2rem 0 1rem; font-size: 1.3rem;">Submit New Medical Request</h2>
+                <div class="complaint-form" style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label for="subject-select">Select Subject</label>
+                        <select id="subject-select" required>
+                            <option value="">Choose a subject...</option>
+                            <option value="ds">Data Structures</option>
+                            <option value="wd">Web Development</option>
+                            <option value="db">Database Management</option>
+                            <option value="se">Software Engineering</option>
+                            <option value="cc">Cloud Computing</option>
+                            <option value="ai">AI & Machine Learning</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lecture-date">Lecture Date</label>
+                        <input type="date" id="lecture-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medical-file">Upload Medical Certificate</label>
+                        <input type="file" id="medical-file" accept=".pdf,.jpg,.png,.doc,.docx" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medical-reason">Reason for Absence</label>
+                        <textarea id="medical-reason" placeholder="Briefly describe your medical condition..." required></textarea>
+                    </div>
+
+                    <button class="submit-btn" onclick="submitMedical()">Submit Medical Request</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ COMPLAINTS SECTION ============ -->
+        <section id="complaints" class="section">
+            <div class="medical-container">
+                <div class="dashboard-header" style="margin-bottom: 2rem;">
+                    <h1>Submit a Complaint</h1>
+                    <p>Report any issues or concerns to the university management</p>
+                </div>
+
+                <div class="complaint-form">
+                    <div id="successMsg" class="success-message">
+                        ✓ Your complaint has been submitted successfully. We will review it shortly.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complaint-type">Complaint Category</label>
+                        <select id="complaint-type" required>
+                            <option value="">Select a category...</option>
+                            <option value="academic">Academic Concerns</option>
+                            <option value="facility">Facility Issues</option>
+                            <option value="staff">Staff Behavior</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complaint-title">Complaint Title</label>
+                        <input type="text" id="complaint-title" placeholder="Brief title of your complaint..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complaint-description">Detailed Description</label>
+                        <textarea id="complaint-description" placeholder="Provide detailed information about your complaint..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complaint-department">Department/Person Involved (Optional)</label>
+                        <input type="text" id="complaint-department" placeholder="If applicable, mention the department or person...">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="anonymous-check">
+                            <label for="anonymous-check">Submit this complaint anonymously</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-info">Contact Information (Email or Phone)</label>
+                        <input type="email" id="contact-info" placeholder="Your email or phone number...">
+                    </div>
+
+                    <button class="submit-btn" onclick="submitComplaint()">Submit Complaint</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============ NEWS MODAL ============ -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>University News & Updates</h2>
+                <button class="close-btn" onclick="closeModal('newsModal')">&times;</button>
+            </div>
+
+            <div class="news-item">
+                <div class="news-date">December 28, 2024</div>
+                <h3>Winter Break Schedule</h3>
+                <p>The university will be closed from December 25, 2024 to January 5, 2025 for winter break. Classes will resume on January 6, 2025.</p>
+            </div>
+
+            <div class="news-item">
+                <div class="news-date">December 22, 2024</div>
+                <h3>New Library Facility</h3>
+                <p>We are excited to announce the opening of our new modern library facility with study zones, computer labs, and reading areas. Visit it today!</p>
+            </div>
+
+            <div class="news-item">
+                <div class="news-date">December 20, 2024</div>
+                <h3>Exam Schedule Released</h3>
+                <p>The examination timetable for the Spring 2025 semester has been released. Check your student portal for detailed schedule and venue information.</p>
+            </div>
+
+            <div class="news-item">
+                <div class="news-date">December 15, 2024</div>
+                <h3>Scholarship Opportunities</h3>
+                <p>Applications are now open for the academic excellence scholarship. Eligible students can apply through the student portal before December 31, 2024.</p>
+            </div>
+
+            <div class="news-item">
+                <div class="news-date">December 10, 2024</div>
+                <h3>Campus WiFi Upgrade</h3>
+                <p>Campus-wide WiFi has been upgraded to 5G speeds. Please reconnect to the network to enjoy faster internet connectivity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ PROFILE MODAL ============ -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>My Profile</h2>
+                <button class="close-btn" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-item">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value">Alex Johnson</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Student ID</div>
+                    <div class="detail-value">2024001</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">alex.johnson@university.edu</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Phone</div>
+                    <div class="detail-value">+1 (555) 123-4567</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Department</div>
+                    <div class="detail-value">Computer Science</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Semester</div>
+                    <div class="detail-value">4th Semester</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Address</div>
+                    <div class="detail-value">123 Student Street, University City, State 12345</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Date of Birth</div>
+                    <div class="detail-value">June 15, 2004</div>
+                </div>
+
+                <button class="edit-btn" onclick="editProfile()">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                
+                // Remove active class from all
+                navLinks.forEach(l => l.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked
+                link.classList.add('active');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Profile modal
+        const profileBtn = document.getElementById('profileBtn');
+        const profileModal = document.getElementById('profileModal');
+        const newsBtn = document.querySelector('[data-section="news"]');
+        const newsModal = document.getElementById('newsModal');
+
+        profileBtn.addEventListener('click', () => {
+            profileModal.classList.add('active');
+        });
+
+        newsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            newsModal.classList.add('active');
+        });
+
+        // Close modals
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Form submissions
+        function submitMedical() {
+            alert('Medical request submitted successfully!');
+            document.getElementById('subject-select').value = '';
+            document.getElementById('lecture-date').value = '';
+            document.getElementById('medical-file').value = '';
+            document.getElementById('medical-reason').value = '';
+        }
+
+        function submitComplaint() {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.classList.add('show');
+            
+            // Clear form
+            document.getElementById('complaint-type').value = '';
+            document.getElementById('complaint-title').value = '';
+            document.getElementById('complaint-description').value = '';
+            document.getElementById('complaint-department').value = '';
+            document.getElementById('anonymous-check').checked = false;
+            document.getElementById('contact-info').value = '';
+
+            // Hide message after 4 seconds
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 4000);
+        }
+
+        function editProfile() {
+            alert('Profile editing feature coming soon!');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('You have been logged out successfully!');
+                // Redirect to login page
+                // window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

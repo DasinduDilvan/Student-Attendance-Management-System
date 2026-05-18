@@ -1,0 +1,89 @@
+
+
+
+-- Student login
+SELECT S_email, S_password FROM student WHERE S_ID = x;
+
+
+
+-- Lecturer login
+SELECT L_email, L_password FROM lecturer;
+
+
+
+-- View Courses for a specific Semester, Level, and Department
+-- for First Department, First Level, First Semester
+SELECT Course_ID, Course_Name, Lecturer_ID, Credits, Lecture_hours, NoOfLectures FROM course
+WHERE Sem_ID = 1 AND Level_ID = 1 AND Dep_ID = 1;
+
+-- for Second Department, Second Level, First Semester
+SELECT Course_ID, Course_Name, Lecturer_ID, Credits, Lecture_hours, NoOfLectures FROM course
+WHERE Sem_ID = 1 AND Level_ID = 2 AND Dep_ID = 2;
+
+-- for Third Department, Fourth Level, Second Semester
+SELECT Course_ID, Course_Name, Lecturer_ID, Credits, Lecture_hours, NoOfLectures FROM course
+WHERE Sem_ID = 2 AND Level_ID = 4 AND Dep_ID = 3;
+
+
+
+-- View courses in semester-level-department
+-- for First Department, First Level, First Semester Courses
+SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = 1 AND Level_ID = 1 AND Dep_ID = 1;
+
+-- for Second Department, Second Level, First Semester Courses
+SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = 1 AND Level_ID = 2 AND Dep_ID = 2;
+
+-- for Third Department, Fourth Level, Second Semester Courses
+SELECT Course_ID, Course_Name FROM course WHERE Sem_ID = x AND Level_ID = 4 AND Dep_ID = 3;
+
+
+
+-- View Attendance for a specific Student
+SELECT * FROM attendanceICT11 WHERE S_ID = 'TG/2024/2050';
+
+
+
+SELECT * FROM attendanceET22 WHERE S_ID = 'TG/2022/2050';
+
+
+
+-- View Medicals from admin panel
+SELECT * FROM medical;
+
+
+
+-- View Complains from admin panel
+SELECT * FROM complain;
+
+
+
+END...
+
+
+
+
+
+<?php
+// view.php
+
+function showForm() {
+    echo '
+        <form method="post">
+            <label>User ID:</label>
+            <input type="number" name="user_id" required>
+            <button type="submit">Find User</button>
+        </form>
+        <hr>
+    ';
+}
+
+function showResult($username) {
+    if ($username) {
+        echo "<h2>User Found: $username ✅</h2>";
+        echo "id: " . $row["id"]. " - Name: " . $row["firstname"]. " " . $row["lastname"]. "<br>";
+    } else {
+        echo "<h2>User Not Found ❌</h2>";
+    }
+}
+
+?>

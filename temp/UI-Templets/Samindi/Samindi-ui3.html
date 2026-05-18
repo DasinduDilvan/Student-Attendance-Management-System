@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --bg-gray: #f8fafc;
+            --text-dark: #1e293b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: var(--primary-blue);
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .logout-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        /* --- Layout Sections --- */
+        section {
+            min-height: 100vh;
+            padding: 120px 50px 50px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        /* --- Dashboard Cards --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .attendance-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background: var(--primary-blue);
+        }
+
+        /* --- Forms --- */
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, textarea, select {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        button.submit-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* --- Modals (Pop-ups) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* --- Status Tags --- */
+        .status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .pending { background: #fef3c7; color: #92400e; }
+        .approved { background: #dcfce7; color: #166534; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="#dashboard">Dashboard</a>
+            <a href="#medical">Medical Requests</a>
+            <a href="#complaints">Complaints</a>
+            <a onclick="toggleModal('newsModal')">NewsForStudents</a>
+        </div>
+        <div class="nav-right">
+            <div class="profile-trigger" onclick="toggleModal('profileModal')">
+                <div class="profile-img"></div>
+                <span>Student</span>
+            </div>
+            <a href="#" class="logout-btn" onclick="handleLogout()">Logout</a>
+        </div>
+    </nav>
+
+    <section id="dashboard">
+        <div class="container">
+            <h2>Attendance Analysis</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Computer Science</h3>
+                    <p>85% Attendance</p>
+                    <div class="attendance-bar"><div class="fill" style="width: 85%"></div></div>
+                </div>
+                <div class="card">
+                    <h3>Mathematics</h3>
+                    <p>92% Attendance</p>
+                    <div class="attendance-bar"><div class="fill" style="width: 92%"></div></div>
+                </div>
+                <div class="card">
+                    <h3>Physics</h3>
+                    <p>60% Attendance</p>
+                    <div class="attendance-bar"><div class="fill" style="width: 60%"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="medical" style="background: #f1f5f9;">
+        <div class="container">
+            <h2>Medical Attachments</h2>
+            <div class="card">
+                <form>
+                    <div class="form-group">
+                        <label>Select Lecture</label>
+                        <select>
+                            <option>CS101 - 25th Oct</option>
+                            <option>MA202 - 27th Oct</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Medical Document</label>
+                        <input type="file">
+                    </div>
+                    <button type="button" class="submit-btn">Submit Request</button>
+                </form>
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+                <h3>Recent Submissions</h3>
+                <div style="margin-top: 15px;">
+                    <p>CS101 - Oct 20 <span class="status approved">Approved</span></p>
+                    <p style="margin-top: 10px;">MA202 - Oct 22 <span class="status pending">Pending</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="complaints">
+        <div class="container">
+            <h2>Submit a Complaint</h2>
+            <div class="card">
+                <form>
+                    <div class="form-group">
+                        <label>Type of Complaint</label>
+                        <select id="complaintType">
+                            <option value="self">As Self</option>
+                            <option value="anon">Anonymous</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="5" placeholder="Describe the issue..."></textarea>
+                    </div>
+                    <button type="button" class="submit-btn">Send Complaint</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal('newsModal')">&times;</span>
+            <h2>University News</h2>
+            <div style="border-left: 4px solid var(--primary-blue); padding-left: 15px; margin-bottom: 20px;">
+                <h4>Semester Finals Postponed</h4>
+                <p style="font-size: 0.9rem; color: #64748b;">Posted 2 hours ago</p>
+            </div>
+            <div style="border-left: 4px solid var(--primary-blue); padding-left: 15px;">
+                <h4>New Library Hours</h4>
+                <p style="font-size: 0.9rem; color: #64748b;">The library is now open 24/7 for exam month.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal('profileModal')">&times;</span>
+            <div style="text-align: center;">
+                <div class="profile-img" style="width: 80px; height: 80px; margin: 0 auto 15px;"></div>
+                <h2>Student Name</h2>
+                <p>ID: U-2024-1005</p>
+                <p>Major: Software Engineering</p>
+                <p>Email: student@university.edu</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Modals
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.style.display === "flex") {
+                modal.style.display = "none";
+            } else {
+                modal.style.display = "flex";
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = "none";
+            }
+        }
+
+        // Logout Simulation
+        function handleLogout() {
+            if(confirm("Are you sure you want to logout?")) {
+                alert("Logged out successfully!");
+                // window.location.href = 'login.html'; 
+            }
+        }
+    </script>
+</body>
+</html>
